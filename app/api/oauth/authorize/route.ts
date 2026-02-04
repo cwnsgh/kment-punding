@@ -83,9 +83,14 @@ export async function GET(req: NextRequest) {
     process.env.CAFE24_REDIRECT_URI!
   );
   authorizeUrl.searchParams.set("state", state); // 안전한 state 사용
-  authorizeUrl.searchParams.set("scope", cafe24Scopes.join(" ")); // 필수 scope 추가
+  const scopeString = cafe24Scopes.join(" ");
+  authorizeUrl.searchParams.set("scope", scopeString); // 필수 scope 추가
 
-  console.log("🔗 카페24 권한 페이지로 리다이렉트:", authorizeUrl.toString());
+  console.log("🔗 카페24 권한 페이지로 리다이렉트:", {
+    url: authorizeUrl.toString(),
+    scopes: cafe24Scopes,
+    scopeString: scopeString,
+  });
 
   // 권한 요청 페이지로 리다이렉트
   return NextResponse.redirect(authorizeUrl.toString());

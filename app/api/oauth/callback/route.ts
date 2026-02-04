@@ -12,11 +12,13 @@ export async function GET(req: NextRequest) {
   // OAuth 에러가 발생한 경우
   if (error) {
     logger.error("❌ OAuth 에러 발생", { error, error_description, state });
-    return NextResponse.redirect(
-      `/?error=oauth_failed&error_description=${encodeURIComponent(
-        error_description || error
-      )}&mall_id=${state?.split(":")[0] || ""}`
-    );
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 
+      `${req.nextUrl.protocol}//${req.nextUrl.host}`;
+    const mall_id = state?.split(":")[0] || "";
+    const errorUrl = `${baseUrl}/?error=oauth_failed&error_description=${encodeURIComponent(
+      error_description || error
+    )}&mall_id=${mall_id}`;
+    return NextResponse.redirect(errorUrl);
   }
 
   if (!code || !state) {
