@@ -188,11 +188,15 @@ export async function GET(req: NextRequest) {
     });
 
     // 5. 성공 시 대시보드로 리다이렉트 (HttpOnly 쿠키 설정)
-    const redirectUrl = `${
-      process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
-    }/dashboard?mall_id=${mall_id}`;
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 
+      `${req.nextUrl.protocol}//${req.nextUrl.host}`;
+    const redirectUrl = `${baseUrl}/dashboard?mall_id=${mall_id}`;
 
-    logger.info("✅ OAuth Callback 완료 - 대시보드로 리다이렉트", { mall_id });
+    logger.info("✅ OAuth Callback 완료 - 대시보드로 리다이렉트", { 
+      mall_id,
+      redirectUrl,
+      baseUrl,
+    });
 
     const response = NextResponse.redirect(redirectUrl);
     return setSessionCookie(response, sessionToken);

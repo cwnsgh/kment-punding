@@ -181,12 +181,13 @@ export async function GET(req: NextRequest) {
       });
 
       // OAuth 인증 페이지로 리다이렉트 (클라이언트에서 state 생성하도록 루트로 리다이렉트)
-      const oauthUrl = `${
-        process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
-      }/?mall_id=${mall_id}&oauth_required=true`;
+      const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 
+        `${req.nextUrl.protocol}//${req.nextUrl.host}`;
+      const oauthUrl = `${baseUrl}/?mall_id=${mall_id}&oauth_required=true`;
 
       logger.info("🔄 처음 설치 사용자 - OAuth 인증으로 리다이렉트", {
         oauthUrl,
+        baseUrl,
       });
 
       return NextResponse.redirect(oauthUrl);
@@ -197,9 +198,9 @@ export async function GET(req: NextRequest) {
       logger.warn("⚠️ 토큰이 없음 - OAuth 인증 필요", { mall_id });
 
       // OAuth 인증 페이지로 리다이렉트
-      const oauthUrl = `${
-        process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
-      }/?mall_id=${mall_id}&oauth_required=true`;
+      const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 
+        `${req.nextUrl.protocol}//${req.nextUrl.host}`;
+      const oauthUrl = `${baseUrl}/?mall_id=${mall_id}&oauth_required=true`;
 
       return NextResponse.redirect(oauthUrl);
     }
@@ -222,11 +223,11 @@ export async function GET(req: NextRequest) {
     logger.info("✅ 세션 생성 완료", { mall_id });
 
     // 응답 생성 (대시보드로 리다이렉트)
-    const redirectUrl = `${
-      process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
-    }/dashboard?mall_id=${mall_id}`;
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 
+      `${req.nextUrl.protocol}//${req.nextUrl.host}`;
+    const redirectUrl = `${baseUrl}/dashboard?mall_id=${mall_id}`;
 
-    logger.info("🔄 대시보드로 리다이렉트", { redirectUrl });
+    logger.info("🔄 대시보드로 리다이렉트", { redirectUrl, baseUrl });
 
     // 🔒 서버에서 직접 리다이렉트 (쿠키가 제대로 전달되도록)
     const response = NextResponse.redirect(redirectUrl);
