@@ -134,6 +134,7 @@ export async function GET(req: NextRequest) {
     }
 
     // 3. Supabase에 저장
+    logger.info("💾 Supabase 저장 시작", { mall_id });
 
     // 타임존 처리 함수 (Cafe24는 타임존 없이 반환하므로 +09:00 추가)
     const addTimezone = (dateStr: string | undefined) => {
@@ -143,7 +144,7 @@ export async function GET(req: NextRequest) {
         : dateStr + "+09:00";
     };
 
-    const { data, error: dbError } = await supabaseAdmin.schema("punding").from("shops").upsert({
+    const shopData = {
       // 토큰 response에서 받은 정보
       mall_id: token.mall_id || mall_id,
       access_token: token.access_token,
@@ -166,10 +167,26 @@ export async function GET(req: NextRequest) {
       enabled: true,
       created_at: addTimezone(token.issued_at) || new Date().toISOString(),
       updated_at: new Date().toISOString(),
+    };
+
+    logger.debug("💾 저장할 데이터", { 
+      mall_id, 
+      hasAccessToken: !!shopData.access_token,
+      hasRefreshToken: !!shopData.refresh_token,
     });
 
+    const { data, error: dbError } = await supabaseAdmin.schema("punding").from("shops").upsert(shopData);
+
     if (dbError) {
-      logger.error("❌ Supabase 저장 실패", { mall_id, error: dbError });
+      logger.error("❌ Supabase 저장 실패", { 
+        mall_id, 
+        error: {
+          message: dbError.message,
+          code: dbError.code,
+          details: dbError.details,
+          hint: dbError.hint,
+        },
+      });
       return NextResponse.json(
         { error: "Failed to save to database", details: dbError },
         { status: 500 }
@@ -179,33 +196,61 @@ export async function GET(req: NextRequest) {
     logger.info("✅ Supabase 저장 성공", { mall_id });
 
     // 4. 🔒 서버 세션 생성 (HttpOnly 쿠키)
-    const { createSession, setSessionCookie } = await import(
-      "@/lib/auth/session"
-    );
+    logger.info("🔐 세션 생성 시작", { mall_id });
+    
+    try {
+      const { createSession, setSessionCookie } = await import(
+        "@/lib/auth/session"
+      );
 
-    const sessionToken = await createSession({
-      mall_id: token.mall_id || mall_id,
-      user_id: token.user_id,
-      shop_no: token.shop_no || "1",
-    });
+      const sessionToken = await createSession({
+        mall_id: token.mall_id || mall_id,
+        user_id: token.user_id,
+        shop_no: token.shop_no || "1",
+      });
+
+      logger.info("✅ 세션 생성 성공", { mall_id });
 
     // 5. 성공 시 대시보드로 리다이렉트 (HttpOnly 쿠키 설정)
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 
       `${req.nextUrl.protocol}//${req.nextUrl.host}`;
     const redirectUrl = `${baseUrl}/dashboard?mall_id=${mall_id}`;
 
-    logger.info("✅ OAuth Callback 완료 - 대시보드로 리다이렉트", { 
-      mall_id,
-      redirectUrl,
-      baseUrl,
-    });
+      logger.info("✅ OAuth Callback 완료 - 대시보드로 리다이렉트", { 
+        mall_id,
+        redirectUrl,
+        baseUrl,
+      });
 
-    const response = NextResponse.redirect(redirectUrl);
-    return setSessionCookie(response, sessionToken);
+      const response = NextResponse.redirect(redirectUrl);
+      return setSessionCookie(response, sessionToken);
+    } catch (sessionError) {
+      logger.error("❌ 세션 생성 실패", { 
+        mall_id,
+        error: sessionError instanceof Error ? {
+          message: sessionError.message,
+          stack: sessionError.stack,
+        } : sessionError,
+      });
+      throw sessionError;
+    }
   } catch (error) {
-    logger.error("❌ OAuth Callback 처리 중 오류", { error });
+    logger.error("❌ OAuth Callback 처리 중 오류", { 
+      error: error instanceof Error ? {
+        message: error.message,
+        stack: error.stack,
+        name: error.name,
+      } : error,
+      errorString: String(error),
+      errorType: typeof error,
+    });
     return NextResponse.json(
-      { error: "Internal server error" },
+      { 
+        error: "Internal server error",
+        details: process.env.NODE_ENV === "development" 
+          ? (error instanceof Error ? error.message : String(error))
+          : undefined,
+      },
       { status: 500 }
     );
   }
