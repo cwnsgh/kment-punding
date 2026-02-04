@@ -1,7 +1,10 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
+
+// 동적 렌더링 강제 (useSearchParams 사용 시 필요)
+export const dynamic = 'force-dynamic';
 
 interface PriceStep {
   target: number;
@@ -24,7 +27,7 @@ interface FundingProduct {
   updated_at: string;
 }
 
-export default function DashboardPage() {
+function DashboardContent() {
   const searchParams = useSearchParams();
   const mallId = searchParams.get("mall_id");
   const [products, setProducts] = useState<FundingProduct[]>([]);
@@ -496,5 +499,22 @@ function ProductModal({
         </form>
       </div>
     </div>
+  );
+}
+
+export default function DashboardPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+            <p className="mt-4 text-gray-600">로딩 중...</p>
+          </div>
+        </div>
+      }
+    >
+      <DashboardContent />
+    </Suspense>
   );
 }

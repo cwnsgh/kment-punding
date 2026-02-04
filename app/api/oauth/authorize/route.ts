@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { cafe24Scopes } from "@/lib/constants/cafe24Scopes";
-import { supabase } from "@/lib/db";
+import { supabaseAdmin } from "@/lib/db";
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);

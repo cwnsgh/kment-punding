@@ -13,10 +13,10 @@ import {
  */
 export async function POST(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
 
     // 펀딩 상품 정보 조회
     const { data: product, error: fetchError } = await supabaseAdmin
