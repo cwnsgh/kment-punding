@@ -50,9 +50,19 @@ export async function GET(req: NextRequest) {
   });
 
   if (error) {
-    console.error("❌ State 저장 실패:", error);
+    console.error("❌ State 저장 실패:", {
+      error: error.message,
+      code: error.code,
+      details: error.details,
+      hint: error.hint,
+      fullError: error,
+    });
     return NextResponse.json(
-      { error: "Failed to save state" },
+      { 
+        error: "Failed to save state",
+        details: process.env.NODE_ENV === "development" ? error.message : undefined,
+        code: error.code,
+      },
       { status: 500 }
     );
   }

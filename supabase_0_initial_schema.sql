@@ -79,7 +79,7 @@ CREATE TABLE IF NOT EXISTS punding.funding_products (
   UNIQUE(mall_id, product_no)
 );
 
--- ============================================
+-- ============================================ 
 -- 4. 인덱스 생성 (성능 최적화)
 -- ============================================
 -- shops 테이블 인덱스
@@ -157,9 +157,20 @@ $$ LANGUAGE plpgsql;
 -- ============================================
 -- 8. 스키마 권한 설정
 -- ============================================
+-- authenticated 역할에 권한 부여
 GRANT USAGE ON SCHEMA punding TO authenticated;
 GRANT ALL ON ALL TABLES IN SCHEMA punding TO authenticated;
 GRANT ALL ON ALL SEQUENCES IN SCHEMA punding TO authenticated;
+
+-- service_role 역할에 권한 부여 (서버 사이드 접근용)
+GRANT USAGE ON SCHEMA punding TO service_role;
+GRANT ALL ON ALL TABLES IN SCHEMA punding TO service_role;
+GRANT ALL ON ALL SEQUENCES IN SCHEMA punding TO service_role;
+
+-- anon 역할에 권한 부여 (필요한 경우)
+GRANT USAGE ON SCHEMA punding TO anon;
+GRANT ALL ON ALL TABLES IN SCHEMA punding TO anon;
+GRANT ALL ON ALL SEQUENCES IN SCHEMA punding TO anon;
 
 -- ============================================
 -- 완료 메시지

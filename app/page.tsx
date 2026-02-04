@@ -2,12 +2,14 @@
 
 import { useEffect, Suspense, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
+import { getShopByMallId } from "@/lib/api/getShop";
 
 function HomeContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [sessionCreating, setSessionCreating] = useState(false);
+  const [shopStatus, setShopStatus] = useState<any>(null);
 
   const mall_id = searchParams.get("mall_id");
   const user_name = searchParams.get("user_name");
@@ -53,7 +55,8 @@ function HomeContent() {
       console.log("🔄 카페24 앱 실행 감지, 세션 생성 시작");
       createSessionFromCafe24();
     } else {
-      setLoading(false);
+      // 기존 로직: 쇼핑몰 연결 상태 확인
+      checkShopStatus();
     }
   }, [mall_id]);
 
@@ -73,6 +76,23 @@ function HomeContent() {
     } catch (error) {
       console.error("❌ 카페24 세션 생성 중 오류:", error);
       setSessionCreating(false);
+      setLoading(false);
+    }
+  };
+
+  const checkShopStatus = async () => {
+    try {
+      const shop = await getShopByMallId(mall_id!);
+      setShopStatus(shop);
+
+      // 권한이 있는 유저는 세션에 저장 후 자동으로 대시보드로 이동
+      if (shop?.enabled && mall_id) {
+        router.push(`/dashboard?mall_id=${mall_id}`);
+        return;
+      }
+    } catch (error) {
+      console.error("상태 확인 실패:", error);
+    } finally {
       setLoading(false);
     }
   };
@@ -152,24 +172,111 @@ function HomeContent() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8 text-center">
-        <h1 className="text-3xl font-bold mb-4">Kment Punding</h1>
-        <p className="text-gray-600 mb-6">카페24 펀딩/예약 판매 앱</p>
-        <div className="space-y-4">
+    <div className="min-h-screen bg-gray-50 py-8 px-4">
+      <div className="max-w-2xl mx-auto">
+        {/* 헤더 */}
+        <div className="text-center mb-8">
+          <div className="text-5xl mb-4">🎉</div>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            Kment Punding에 오신 것을 환영합니다!
+          </h1>
+          <p className="text-gray-600">카페24 펀딩/예약 판매 앱</p>
+        </div>
+
+        {/* 쇼핑몰 정보 카드 */}
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-3">
+            🏪 쇼핑몰 정보
+          </h3>
           <div className="bg-gray-50 rounded-lg p-4">
             <p className="text-sm text-gray-600">몰 ID</p>
             <p className="text-lg font-mono font-semibold text-gray-900 mt-1">
               {mall_id}
             </p>
           </div>
-          <div className="mt-8">
-            <a
-              href="/authorize"
-              className="inline-block bg-blue-600 text-white px-6 py-3 rounded-md hover:bg-blue-700"
+        </div>
+
+        {/* 연결 상태 카드 */}
+        {shopStatus?.enabled ? (
+          <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl shadow-sm border border-green-200 p-6 mb-6">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h3 className="text-xl font-semibold text-green-900 mb-2">
+                  ✅ 연결 완료
+                </h3>
+                <p className="text-green-700">이미 펀딩 앱이 연결되어 있습니다!</p>
+              </div>
+            </div>
+            <button
+              onClick={() => {
+                if (mall_id) {
+                  router.push(`/dashboard?mall_id=${mall_id}`);
+                }
+              }}
+              className="w-full bg-green-600 text-white py-3 rounded-lg font-medium hover:bg-green-700 transition-colors"
             >
-              수동 인증 시작
-            </a>
+              대시보드 보기
+            </button>
+          </div>
+        ) : (
+          <div className="bg-gradient-to-br from-yellow-50 to-amber-50 rounded-2xl shadow-sm border border-yellow-200 p-6 mb-6">
+            <div className="mb-4">
+              <h3 className="text-xl font-semibold text-yellow-900 mb-2">
+                🔗 펀딩 앱 연결하기
+              </h3>
+              <p className="text-yellow-700">
+                펀딩 기능을 사용하려면 카페24 권한을 승인해야 합니다.
+              </p>
+              <p className="text-yellow-700">앱 설치시에 한번만 진행됩니다.</p>
+            </div>
+            <button
+              onClick={handleAuthorize}
+              className="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors"
+            >
+              권한 요청하기
+            </button>
+          </div>
+        )}
+
+        {/* 펀딩 기능 안내 */}
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">
+            📋 펀딩 기능
+          </h3>
+          <div className="space-y-3">
+            <div className="flex items-start">
+              <div className="flex-shrink-0 w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center mr-3 mt-0.5">
+                <span className="text-blue-600 text-sm">✓</span>
+              </div>
+              <div>
+                <p className="text-gray-900 font-medium">예약 판매 진행</p>
+                <p className="text-gray-600 text-sm">
+                  상품별 예약 판매 및 펀딩 기능
+                </p>
+              </div>
+            </div>
+            <div className="flex items-start">
+              <div className="flex-shrink-0 w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center mr-3 mt-0.5">
+                <span className="text-blue-600 text-sm">✓</span>
+              </div>
+              <div>
+                <p className="text-gray-900 font-medium">동적 가격 조정</p>
+                <p className="text-gray-600 text-sm">
+                  목표 수량 달성에 따른 자동 가격 변경
+                </p>
+              </div>
+            </div>
+            <div className="flex items-start">
+              <div className="flex-shrink-0 w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center mr-3 mt-0.5">
+                <span className="text-blue-600 text-sm">✓</span>
+              </div>
+              <div>
+                <p className="text-gray-900 font-medium">게이지바 및 진행률 표시</p>
+                <p className="text-gray-600 text-sm">
+                  실시간 판매량 추적 및 달성률 표시
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
