@@ -176,14 +176,26 @@ export async function GET(req: NextRequest) {
 
     logger.info("✅ Supabase 저장 성공", { mall_id });
 
-    // 4. 성공 시 대시보드로 리다이렉트
+    // 4. 🔒 서버 세션 생성 (HttpOnly 쿠키)
+    const { createSession, setSessionCookie } = await import(
+      "@/lib/auth/session"
+    );
+
+    const sessionToken = await createSession({
+      mall_id: token.mall_id || mall_id,
+      user_id: token.user_id,
+      shop_no: token.shop_no || "1",
+    });
+
+    // 5. 성공 시 대시보드로 리다이렉트 (HttpOnly 쿠키 설정)
     const redirectUrl = `${
       process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
     }/dashboard?mall_id=${mall_id}`;
 
     logger.info("✅ OAuth Callback 완료 - 대시보드로 리다이렉트", { mall_id });
 
-    return NextResponse.redirect(redirectUrl);
+    const response = NextResponse.redirect(redirectUrl);
+    return setSessionCookie(response, sessionToken);
   } catch (error) {
     logger.error("❌ OAuth Callback 처리 중 오류", { error });
     return NextResponse.json(
