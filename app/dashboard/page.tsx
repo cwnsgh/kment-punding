@@ -1,7 +1,7 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState, Suspense } from "react";
+import { useEffect, useState, Suspense, useCallback } from "react";
 
 // 동적 렌더링 강제 (useSearchParams 사용 시 필요)
 export const dynamic = 'force-dynamic';
@@ -280,6 +280,57 @@ function ProductModal({
   });
   const [loading, setLoading] = useState(false);
   const [newStep, setNewStep] = useState({ target: 0, price: 0 });
+  
+  // 상품 목록 관련 상태
+  const [products, setProducts] = useState<any[]>([]);
+  const [loadingProducts, setLoadingProducts] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [showProductList, setShowProductList] = useState(!product); // 수정 모드가 아니면 상품 목록 표시
+
+  // 상품 목록 불러오기
+  const fetchProducts = useCallback(async () => {
+    if (!mallId) return;
+    
+    setLoadingProducts(true);
+    try {
+      const response = await fetch(`/api/products/list?mall_id=${mallId}&limit=100`);
+      const data = await response.json();
+      if (response.ok) {
+        setProducts(data.products || []);
+      } else {
+        alert(`상품 목록을 불러올 수 없습니다: ${data.error}`);
+      }
+    } catch (error) {
+      console.error("상품 목록 조회 실패:", error);
+      alert("상품 목록을 불러오는 중 오류가 발생했습니다.");
+    } finally {
+      setLoadingProducts(false);
+    }
+  }, [mallId]);
+
+  // 모달이 열릴 때 상품 목록 불러오기 (수정 모드가 아닐 때만)
+  useEffect(() => {
+    if (!product && mallId) {
+      fetchProducts();
+    }
+  }, [mallId, product, fetchProducts]);
+
+  // 상품 선택 핸들러
+  const handleProductSelect = (selectedProduct: any) => {
+    setFormData({
+      ...formData,
+      product_no: selectedProduct.product_no,
+      initial_price: selectedProduct.price || selectedProduct.retail_price || 0,
+    });
+    setShowProductList(false);
+  };
+
+  // 검색 필터링된 상품 목록
+  const filteredProducts = products.filter((p) =>
+    p.product_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    p.product_code.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    p.product_no.includes(searchQuery)
+  );
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -343,17 +394,118 @@ function ProductModal({
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium mb-1">상품번호 *</label>
-            <input
-              type="text"
-              value={formData.product_no}
-              onChange={(e) =>
-                setFormData({ ...formData, product_no: e.target.value })
-              }
-              required
-              disabled={!!product}
-              className="w-full px-3 py-2 border rounded-md"
-            />
+            <label className="block text-sm font-medium mb-1">상품 선택 *</label>
+            {product ? (
+              // 수정 모드: 상품번호만 표시 (변경 불가)
+              <input
+                type="text"
+                value={`${formData.product_no} (수정 불가)`}
+                disabled
+                className="w-full px-3 py-2 border rounded-md bg-gray-100"
+              />
+            ) : (
+              // 추가 모드: 상품 목록에서 선택
+              <div>
+                {showProductList ? (
+                  <div className="border rounded-md p-4 max-h-96 overflow-y-auto">
+                    <div className="flex gap-2 mb-3">
+                      <input
+                        type="text"
+                        placeholder="상품명, 상품코드, 상품번호로 검색..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="flex-1 px-3 py-2 border rounded-md"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowProductList(false)}
+                        className="px-3 py-2 border rounded-md hover:bg-gray-50"
+                      >
+                        닫기
+                      </button>
+                    </div>
+                    {loadingProducts ? (
+                      <div className="text-center py-8 text-gray-500">
+                        상품 목록을 불러오는 중...
+                      </div>
+                    ) : filteredProducts.length === 0 ? (
+                      <div className="text-center py-8 text-gray-500">
+                        {searchQuery ? "검색 결과가 없습니다." : "상품이 없습니다."}
+                      </div>
+                    ) : (
+                      <div className="space-y-2">
+                        {filteredProducts.map((p) => (
+                          <div
+                            key={p.product_no}
+                            onClick={() => handleProductSelect(p)}
+                            className="p-3 border rounded-md hover:bg-blue-50 cursor-pointer transition-colors"
+                          >
+                            <div className="flex justify-between items-start">
+                              <div className="flex-1">
+                                <p className="font-medium text-gray-900">
+                                  {p.product_name}
+                                </p>
+                                <p className="text-sm text-gray-500">
+                                  상품번호: {p.product_no} | 코드: {p.product_code}
+                                </p>
+                              </div>
+                              <div className="text-right ml-4">
+                                <p className="font-semibold text-gray-900">
+                                  {p.price.toLocaleString()}원
+                                </p>
+                                {p.retail_price && p.retail_price !== p.price && (
+                                  <p className="text-sm text-gray-500 line-through">
+                                    {p.retail_price.toLocaleString()}원
+                                  </p>
+                                )}
+                              </div>
+                            </div>
+                            {!p.display && (
+                              <p className="text-xs text-red-500 mt-1">
+                                ⚠️ 비노출 상품
+                              </p>
+                            )}
+                            {!p.selling && (
+                              <p className="text-xs text-red-500 mt-1">
+                                ⚠️ 판매 중지 상품
+                              </p>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    {formData.product_no ? (
+                      <div className="p-3 border rounded-md bg-blue-50">
+                        <p className="font-medium">
+                          선택된 상품: {formData.product_no}
+                        </p>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setFormData({ ...formData, product_no: "" });
+                            setShowProductList(true);
+                          }}
+                          className="text-sm text-blue-600 hover:text-blue-800 mt-1"
+                        >
+                          다른 상품 선택
+                        </button>
+                      </div>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => setShowProductList(true)}
+                        className="w-full px-4 py-2 border-2 border-dashed border-gray-300 rounded-md hover:border-blue-500 hover:bg-blue-50 transition-colors"
+                      >
+                        + 상품 선택하기
+                      </button>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           <div>

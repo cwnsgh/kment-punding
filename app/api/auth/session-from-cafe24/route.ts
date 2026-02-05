@@ -166,12 +166,37 @@ export async function GET(req: NextRequest) {
     // DB에서 쇼핑몰 정보 확인 (punding 스키마 사용)
     logger.info("📊 DB에서 쇼핑몰 정보 조회", { mall_id });
 
-    const { data: shop, error: shopError } = await supabaseAdmin
-      .schema("punding")
-      .from("shops")
-      .select("*")
-      .eq("mall_id", mall_id)
-      .single();
+    let shop, shopError;
+    try {
+      const result = await supabaseAdmin
+        .schema("punding")
+        .from("shops")
+        .select("*")
+        .eq("mall_id", mall_id)
+        .single();
+      shop = result.data;
+      shopError = result.error;
+      
+      if (shopError) {
+        logger.error("❌ DB 조회 에러 상세", {
+          error: shopError,
+          code: shopError.code,
+          message: shopError.message,
+          details: shopError.details,
+          hint: shopError.hint,
+        });
+      }
+    } catch (dbError) {
+      logger.error("❌ DB 조회 중 예외 발생", {
+        error: dbError instanceof Error ? {
+          message: dbError.message,
+          stack: dbError.stack,
+          name: dbError.name,
+        } : dbError,
+      });
+      shopError = dbError as any;
+      shop = null;
+    }
 
     // 🔒 처음 설치하는 사용자는 OAuth 인증 필요!
     if (shopError || !shop) {
@@ -214,13 +239,26 @@ export async function GET(req: NextRequest) {
     // 세션 생성
     logger.info("🎫 세션 생성 시작", { mall_id, user_id });
 
-    const sessionToken = await createSession({
-      mall_id,
-      user_id: user_id || undefined,
-      shop_no: shop_no || undefined,
-    });
-
-    logger.info("✅ 세션 생성 완료", { mall_id });
+    let sessionToken: string;
+    try {
+      sessionToken = await createSession({
+        mall_id,
+        user_id: user_id || undefined,
+        shop_no: shop_no || undefined,
+      });
+      logger.info("✅ 세션 생성 완료", { mall_id });
+    } catch (sessionError) {
+      logger.error("❌ 세션 생성 실패", {
+        error: sessionError instanceof Error ? {
+          message: sessionError.message,
+          stack: sessionError.stack,
+          name: sessionError.name,
+        } : sessionError,
+        mall_id,
+        user_id,
+      });
+      throw sessionError; // 상위 catch로 전달
+    }
 
     // 응답 생성 (대시보드로 리다이렉트)
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 
@@ -239,7 +277,21 @@ export async function GET(req: NextRequest) {
 
     return response;
   } catch (error) {
-    logger.error("❌ 카페24 세션 생성 중 오류", { error });
+    // 에러 상세 정보 로깅
+    const errorDetails = error instanceof Error ? {
+      message: error.message,
+      stack: error.stack,
+      name: error.name,
+    } : {
+      error: String(error),
+      type: typeof error,
+    };
+
+    logger.error("❌ 카페24 세션 생성 중 오류", { 
+      error: errorDetails,
+      errorString: String(error),
+      errorType: typeof error,
+    });
 
     return NextResponse.json(
       {
@@ -247,7 +299,13 @@ export async function GET(req: NextRequest) {
         error: "Internal server error",
         code: "INTERNAL_ERROR",
         details:
-          process.env.NODE_ENV === "development" ? String(error) : undefined,
+          process.env.NODE_ENV === "development" 
+            ? (error instanceof Error ? error.message : String(error))
+            : undefined,
+        // 개발 환경에서만 스택 트레이스 포함
+        ...(process.env.NODE_ENV === "development" && error instanceof Error
+          ? { stack: error.stack }
+          : {}),
       },
       { status: 500 }
     );
