@@ -5,9 +5,10 @@ export const cafe24Scopes = [
   "mall.write_application",
   "mall.read_category",
   "mall.read_product",
+  "mall.write_product",
   "mall.read_store",
   "mall.read_analytics",
-  // 주의: mall.write_product와 mall.read_order는 
+  // 주의: mall.write_product와 mall.read_order는
   // Cafe24 개발자 센터에서 별도 승인이 필요합니다.
   // 개발자 센터에서 "상품(Product)" Read + Write와 "주문(Order)" Read 권한을
   // 설정한 후 아래 주석을 해제하세요.

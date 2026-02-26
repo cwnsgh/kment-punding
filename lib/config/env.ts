@@ -40,7 +40,7 @@ export const config = {
     clientId: process.env.CAFE24_CLIENT_ID || "",
     clientSecret: process.env.CAFE24_CLIENT_SECRET || "",
     redirectUri: process.env.CAFE24_REDIRECT_URI || "",
-    apiVersion: process.env.CAFE24_API_VERSION || "2025-06-01",
+    apiVersion: process.env.CAFE24_API_VERSION || "2025-12-01", // 카페24 API 버전 (YYYY-MM-DD 형식)
     baseUrl: process.env.CAFE24_BASE_URL || "cafe24api.com",
   },
   app: {

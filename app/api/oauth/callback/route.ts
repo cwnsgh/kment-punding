@@ -108,7 +108,7 @@ export async function GET(req: NextRequest) {
             Authorization: `Bearer ${token.access_token}`,
             "Content-Type": "application/json",
             "X-Cafe24-Api-Version":
-              process.env.CAFE24_API_VERSION || "2025-06-01",
+              process.env.CAFE24_API_VERSION || "2025-12-01",
           },
         }
       );

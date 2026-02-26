@@ -578,56 +578,108 @@ function ProductModal({
 
           {/* 가격 단계 추가 */}
           <div className="border-t pt-4">
-            <h3 className="font-semibold mb-2">가격 단계 설정</h3>
-            <div className="flex gap-2 mb-2">
-              <input
-                type="number"
-                placeholder="목표 수량"
-                value={newStep.target || ""}
-                onChange={(e) =>
-                  setNewStep({ ...newStep, target: parseInt(e.target.value) || 0 })
-                }
-                min="1"
-                className="flex-1 px-3 py-2 border rounded-md"
-              />
-              <input
-                type="number"
-                placeholder="가격"
-                value={newStep.price || ""}
-                onChange={(e) =>
-                  setNewStep({ ...newStep, price: parseFloat(e.target.value) || 0 })
-                }
-                min="0"
-                className="flex-1 px-3 py-2 border rounded-md"
-              />
-              <button
-                type="button"
-                onClick={addPriceStep}
-                className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
-              >
-                추가
-              </button>
+            <div className="mb-3">
+              <h3 className="font-semibold mb-1">가격 단계 설정 (목표 달성 시 자동 가격 변경)</h3>
+              <p className="text-xs text-gray-600 mb-2">
+                표시 판매량(실제 판매량 × 노출 배수)이 목표 수량에 도달하면 가격이 자동으로 변경됩니다.
+                <br />
+                예: 초기 10,000원 → 100개 달성 시 9,000원 → 500개 달성 시 8,000원
+              </p>
+            </div>
+            
+            <div className="bg-blue-50 border border-blue-200 rounded-md p-3 mb-3">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-sm font-medium text-blue-900">초기 가격:</span>
+                <span className="text-sm text-blue-700">
+                  {formData.initial_price.toLocaleString()}원
+                </span>
+              </div>
+              {formData.price_steps.length > 0 && (
+                <div className="space-y-1">
+                  {formData.price_steps.map((step, idx) => (
+                    <div key={idx} className="flex items-center gap-2 text-sm">
+                      <span className="text-blue-900">→</span>
+                      <span className="font-medium text-blue-900">{step.target}개 달성 시:</span>
+                      <span className="text-blue-700">{step.price.toLocaleString()}원</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div className="flex gap-2 mb-3">
+              <div className="flex-1">
+                <label className="block text-xs text-gray-600 mb-1">목표 수량 (표시 판매량)</label>
+                <input
+                  type="number"
+                  placeholder="예: 100"
+                  value={newStep.target || ""}
+                  onChange={(e) =>
+                    setNewStep({ ...newStep, target: parseInt(e.target.value) || 0 })
+                  }
+                  min="1"
+                  className="w-full px-3 py-2 border rounded-md"
+                />
+              </div>
+              <div className="flex-1">
+                <label className="block text-xs text-gray-600 mb-1">변경될 가격</label>
+                <input
+                  type="number"
+                  placeholder="예: 9000"
+                  value={newStep.price || ""}
+                  onChange={(e) =>
+                    setNewStep({ ...newStep, price: parseFloat(e.target.value) || 0 })
+                  }
+                  min="0"
+                  step="100"
+                  className="w-full px-3 py-2 border rounded-md"
+                />
+              </div>
+              <div className="flex items-end">
+                <button
+                  type="button"
+                  onClick={addPriceStep}
+                  disabled={!newStep.target || !newStep.price || newStep.price <= 0}
+                  className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
+                >
+                  추가
+                </button>
+              </div>
             </div>
 
             {formData.price_steps.length > 0 && (
               <div className="space-y-2">
+                <p className="text-sm font-medium text-gray-700">설정된 가격 단계:</p>
                 {formData.price_steps.map((step, idx) => (
                   <div
                     key={idx}
-                    className="flex justify-between items-center bg-gray-50 p-2 rounded"
+                    className="flex justify-between items-center bg-gray-50 p-3 rounded-md border"
                   >
-                    <span>
-                      {step.target}개 달성 시: {step.price.toLocaleString()}원
-                    </span>
+                    <div>
+                      <span className="font-medium text-gray-900">
+                        {step.target}개 달성 시
+                      </span>
+                      <span className="text-gray-600 ml-2">
+                        → {step.price.toLocaleString()}원
+                      </span>
+                      {step.price >= formData.initial_price && (
+                        <span className="text-xs text-red-500 ml-2">
+                          ⚠️ 초기 가격보다 높습니다
+                        </span>
+                      )}
+                    </div>
                     <button
                       type="button"
                       onClick={() => removePriceStep(idx)}
-                      className="text-red-600 hover:text-red-800"
+                      className="text-red-600 hover:text-red-800 text-sm"
                     >
                       삭제
                     </button>
                   </div>
                 ))}
+                <p className="text-xs text-gray-500 mt-2">
+                  💡 팁: 목표 수량은 낮은 순서부터 높은 순서로 자동 정렬됩니다.
+                </p>
               </div>
             )}
           </div>
