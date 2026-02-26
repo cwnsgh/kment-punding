@@ -326,6 +326,44 @@ export async function updateProductPrice(
 }
 
 /**
+ * 상품 description만 수정 (GET 전체 → description 교체 → PUT)
+ */
+export async function updateProductDescription(
+  mallId: string,
+  productNo: string,
+  description: string,
+  accessToken?: string
+): Promise<boolean> {
+  const token = accessToken || (await getValidAccessToken(mallId));
+  if (!token) {
+    throw new Error("액세스 토큰을 가져올 수 없습니다.");
+  }
+
+  const product = await getProductInfo(mallId, productNo, token);
+  const request = { ...product, description };
+  const result = await callCafe24Api({
+    mallId,
+    endpoint: `admin/products/${productNo}`,
+    method: "PUT",
+    accessToken: token,
+    body: { shop_no: 1, request },
+  });
+
+  if (!result.success) {
+    logger.error("상품 description 수정 실패", {
+      mallId,
+      productNo,
+      error: result.error,
+      status: result.status,
+    });
+    return false;
+  }
+
+  logger.info("상품 description 수정 성공", { mallId, productNo });
+  return true;
+}
+
+/**
  * 주문 목록 조회 (판매량 계산용)
  */
 export async function getOrders(
