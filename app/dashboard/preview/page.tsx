@@ -48,7 +48,7 @@ export default function PreviewWindowPage() {
           title="미리보기"
           srcDoc={srcdoc}
           className="w-full h-full min-h-[70vh] border-0 block bg-white"
-          sandbox="allow-same-origin"
+          sandbox="allow-same-origin allow-scripts"
         />
       </div>
       {!srcdoc && (

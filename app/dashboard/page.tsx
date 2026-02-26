@@ -14,7 +14,7 @@ function escapeForSrcdoc(s: string): string {
 
 function buildPreviewDocument(html: string): string {
   if (!html || typeof html !== "string") html = "";
-  let raw = html.replace(/<script\b[\s\S]*?<\/script>/gi, "");
+  const raw = html;
   const styleBlocks: string[] = [];
   const styleRegex = /<style[^>]*>([\s\S]*?)<\/\s*style\s*>/gi;
   let bodyContent = raw.replace(styleRegex, (_, inner) => {
@@ -298,7 +298,7 @@ function DashboardContent() {
                         title="description 미리보기"
                         srcDoc={buildPreviewDocument(currentText)}
                         className="w-full h-full min-h-[360px] border-0 block"
-                        sandbox="allow-same-origin"
+                        sandbox="allow-same-origin allow-scripts"
                       />
                     </div>
                   </div>
