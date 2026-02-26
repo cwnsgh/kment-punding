@@ -326,7 +326,8 @@ export async function updateProductPrice(
 }
 
 /**
- * 상품 description만 수정 (GET 전체 → description 교체 → PUT)
+ * 상품 description만 수정 (request에 description만 전송해 422 방지)
+ * 전체 GET 후 PUT 시 사용 불가 필드(is_cultural_tax 등)가 포함되면 422가 나므로, 수정할 필드만 보냄.
  */
 export async function updateProductDescription(
   mallId: string,
@@ -339,14 +340,12 @@ export async function updateProductDescription(
     throw new Error("액세스 토큰을 가져올 수 없습니다.");
   }
 
-  const product = await getProductInfo(mallId, productNo, token);
-  const request = { ...product, description };
   const result = await callCafe24Api({
     mallId,
     endpoint: `admin/products/${productNo}`,
     method: "PUT",
     accessToken: token,
-    body: { shop_no: 1, request },
+    body: { shop_no: 1, request: { description } },
   });
 
   if (!result.success) {
