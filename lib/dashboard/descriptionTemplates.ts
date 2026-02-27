@@ -157,6 +157,31 @@ function getSectionsHtmlB(): string {
 </section>`;
 }
 
+/** 템플릿 C 전용: 미니멀 에디토리얼 레이아웃 (동일 플레이스홀더·클래스명 유지) */
+function getSectionsHtmlC(): string {
+  return `
+<section class="pd-sec pd-sec1 pd-sec1-c" data-reveal>
+  <div class="pd-sec1-img"><img src="{{sec1_imageUrl}}" alt="" onerror="this.style.display='none'"/></div>
+  <div class="pd-sec1-text">{{sec1_text}}</div>
+</section>
+<section class="pd-sec pd-sec2 pd-sec2-c" data-reveal>
+  <div class="pd-sec2-text">{{sec2_text}}</div>
+  <div class="pd-sec2-img"><img src="{{sec2_imageUrl}}" alt="" onerror="this.style.display='none'"/></div>
+</section>
+<section class="pd-sec pd-sec3 pd-sec3-c" data-reveal>
+  <span class="pd-sec-c-label">상세 정보</span>
+  <div class="pd-accordion">{{sec3_items}}</div>
+</section>
+<section class="pd-sec pd-sec4 pd-sec4-c" data-reveal>
+  <span class="pd-sec-c-label">동영상</span>
+  {{sec4_videoEmbed}}
+</section>
+<section class="pd-sec pd-sec5 pd-sec5-c" data-reveal>
+  <span class="pd-sec-c-label">자주 묻는 질문</span>
+  <div class="pd-qa-list">{{sec5_qa}}</div>
+</section>`;
+}
+
 /** 테마 A: 밝고 심플, 연한 그레이 톤 */
 function getThemeStylesA(): string {
   return `
@@ -377,38 +402,141 @@ function getThemeStylesB(): string {
 `;
 }
 
-/** 테마 C: 미니멀 블랙/화이트 */
+/** 테마 C: 미니멀 에디토리얼 – 좁은 단, 세리프, 블랙/화이트 */
 function getThemeStylesC(): string {
   return `
-.pd-detail.pd-theme-c { font-family: Georgia, 'Malgun Gothic', serif; max-width: 680px; margin: 0 auto; padding: 32px 20px; color: #171717; background: #fff; }
-.pd-detail.pd-theme-c .pd-sec { padding: 36px 0; border-bottom: 1px solid #e5e5e5; }
-.pd-detail.pd-theme-c .pd-sec:last-child { border-bottom: none; }
-.pd-detail.pd-theme-c .pd-sec1-inner,
-.pd-detail.pd-theme-c .pd-sec2-inner { display: flex; align-items: center; gap: 32px; flex-wrap: wrap; }
-.pd-detail.pd-theme-c .pd-sec1-img,
-.pd-detail.pd-theme-c .pd-sec2-img { flex: 1 1 260px; }
-.pd-detail.pd-theme-c .pd-sec1-img img,
-.pd-detail.pd-theme-c .pd-sec2-img img { width: 100%; height: auto; display: block; background: #fafafa; }
-.pd-detail.pd-theme-c .pd-sec1-text,
-.pd-detail.pd-theme-c .pd-sec2-text { flex: 1 1 260px; line-height: 1.8; white-space: pre-wrap; font-size: 0.98rem; color: #404040; }
-.pd-detail.pd-theme-c .pd-sec3-title,
-.pd-detail.pd-theme-c .pd-sec4-title,
-.pd-detail.pd-theme-c .pd-sec5-title { margin: 0 0 18px; font-size: 1rem; font-weight: 600; color: #171717; letter-spacing: 0.02em; text-transform: uppercase; }
-.pd-detail.pd-theme-c .pd-accordion-item { border: 1px solid #e5e5e5; margin-bottom: 6px; }
-.pd-detail.pd-theme-c .pd-accordion-head { width: 100%; padding: 16px 20px; text-align: left; font-size: 0.95rem; font-weight: 600; color: #171717; background: #fff; border: none; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: background 0.2s; }
-.pd-detail.pd-theme-c .pd-accordion-head:hover { background: #fafafa; }
-.pd-detail.pd-theme-c .pd-accordion-head::after { content: '›'; font-size: 1.2rem; transform: rotate(90deg); transition: transform 0.3s; }
-.pd-detail.pd-theme-c .pd-accordion-item[data-open] .pd-accordion-head::after { transform: rotate(-90deg); }
+.pd-detail.pd-theme-c {
+  font-family: Georgia, 'Times New Roman', 'Malgun Gothic', serif;
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 0 24px 56px;
+  color: #171717;
+  background: #fff;
+  line-height: 1.7;
+}
+.pd-detail.pd-theme-c .pd-sec { padding: 48px 0; }
+.pd-detail.pd-theme-c .pd-sec-c-label {
+  display: block;
+  font-family: 'Malgun Gothic', sans-serif;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #737373;
+  margin-bottom: 20px;
+}
+.pd-detail.pd-theme-c .pd-sec1-c { padding-top: 0; }
+.pd-detail.pd-theme-c .pd-sec1-img {
+  margin-bottom: 32px;
+}
+.pd-detail.pd-theme-c .pd-sec1-img img {
+  width: 100%;
+  height: auto;
+  display: block;
+  background: #fafafa;
+}
+.pd-detail.pd-theme-c .pd-sec1-text {
+  white-space: pre-wrap;
+  font-size: 0.9375rem;
+  color: #404040;
+  line-height: 1.8;
+  padding-top: 24px;
+  border-top: 1px solid #e5e5e5;
+}
+.pd-detail.pd-theme-c .pd-sec2-c .pd-sec2-text {
+  white-space: pre-wrap;
+  font-size: 0.9375rem;
+  color: #404040;
+  line-height: 1.8;
+  margin-bottom: 28px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid #e5e5e5;
+}
+.pd-detail.pd-theme-c .pd-sec2-img img {
+  width: 100%;
+  height: auto;
+  display: block;
+  background: #fafafa;
+}
+.pd-detail.pd-theme-c .pd-accordion-item {
+  border-bottom: 1px solid #e5e5e5;
+  margin-bottom: 0;
+}
+.pd-detail.pd-theme-c .pd-accordion-head {
+  width: 100%;
+  padding: 20px 0;
+  text-align: left;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #171717;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: color 0.2s;
+}
+.pd-detail.pd-theme-c .pd-accordion-head:hover { color: #404040; }
+.pd-detail.pd-theme-c .pd-accordion-head::after {
+  content: '+';
+  font-size: 1rem;
+  font-weight: 400;
+  color: #a3a3a3;
+  flex-shrink: 0;
+  margin-left: 12px;
+  transition: transform 0.25s ease;
+}
+.pd-detail.pd-theme-c .pd-accordion-item[data-open] .pd-accordion-head::after {
+  content: '−';
+  transform: none;
+}
 .pd-detail.pd-theme-c .pd-accordion-body { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
-.pd-detail.pd-theme-c .pd-accordion-body-inner { padding: 16px 20px; line-height: 1.7; color: #525252; border-top: 1px solid #e5e5e5; font-size: 0.95rem; }
-.pd-detail.pd-theme-c .pd-video-wrap { position: relative; width: 100%; padding-bottom: 56.25%; height: 0; overflow: hidden; background: #0a0a0a; }
-.pd-detail.pd-theme-c .pd-video-wrap iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
-.pd-detail.pd-theme-c .pd-qa-item { padding: 20px 0; border-bottom: 1px solid #e5e5e5; }
+.pd-detail.pd-theme-c .pd-accordion-body-inner {
+  padding: 0 0 20px;
+  line-height: 1.75;
+  color: #525252;
+  font-size: 0.9375rem;
+  border-top: none;
+}
+.pd-detail.pd-theme-c .pd-video-wrap {
+  position: relative;
+  width: 100%;
+  padding-bottom: 56.25%;
+  height: 0;
+  overflow: hidden;
+  background: #0a0a0a;
+  margin-top: 8px;
+}
+.pd-detail.pd-theme-c .pd-video-wrap iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+.pd-detail.pd-theme-c .pd-qa-item {
+  padding: 22px 0;
+  border-bottom: 1px solid #e5e5e5;
+}
 .pd-detail.pd-theme-c .pd-qa-item:last-child { border-bottom: none; }
-.pd-detail.pd-theme-c .pd-qa-q { font-weight: 600; color: #171717; margin-bottom: 8px; font-size: 0.95rem; }
-.pd-detail.pd-theme-c .pd-qa-a { font-size: 0.9rem; color: #525252; line-height: 1.75; }
+.pd-detail.pd-theme-c .pd-qa-q {
+  font-weight: 600;
+  color: #171717;
+  font-size: 0.9375rem;
+  margin-bottom: 8px;
+}
+.pd-detail.pd-theme-c .pd-qa-a {
+  font-size: 0.9375rem;
+  color: #525252;
+  line-height: 1.75;
+}
 .pd-detail.pd-theme-c .pd-sec[data-visible] { opacity: 1; transform: translateY(0); }
-.pd-detail.pd-theme-c .pd-sec { opacity: 0; transform: translateY(16px); transition: opacity 0.5s ease, transform 0.5s ease; }
+.pd-detail.pd-theme-c .pd-sec {
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
 `;
 }
 
@@ -456,7 +584,8 @@ function getScript(): string {
 
 function buildFullHtml(theme: ThemeId): string {
   const themeClass = theme === "A" ? "pd-theme-a" : theme === "B" ? "pd-theme-b" : "pd-theme-c";
-  const sectionsHtml = theme === "B" ? getSectionsHtmlB() : getSectionsHtml();
+  const sectionsHtml =
+    theme === "B" ? getSectionsHtmlB() : theme === "C" ? getSectionsHtmlC() : getSectionsHtml();
   return `<style>${getThemeStyles(theme)}</style><div class="pd-detail ${themeClass}">${sectionsHtml}</div><script>${getScript()}</script>`;
 }
 
@@ -483,8 +612,8 @@ function getTemplateB(): DescriptionTemplate {
 function getTemplateC(): DescriptionTemplate {
   return {
     id: "C",
-    name: "템플릿 C – 미니멀 다크",
-    description: "블랙/화이트 미니멀, 같은 5섹션 구조",
+    name: "템플릿 C – 미니멀 에디토리얼",
+    description: "좁은 단, 세리프, 블랙/화이트. 이미지·텍스트 세로 배치, 아코디언·Q&A 심플 라인.",
     fields: [...COMMON_FIELDS],
     html: buildFullHtml("C"),
   };
