@@ -79,27 +79,68 @@ function DashboardContent() {
   const previewProductNoRef = useRef<string | null>(null);
   const previewHtmlRef = useRef<string>("");
 
+  const compressImageForUpload = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const img = document.createElement("img");
+      const url = URL.createObjectURL(file);
+      img.onload = () => {
+        URL.revokeObjectURL(url);
+        const maxW = 1600;
+        const maxH = 1600;
+        let w = img.naturalWidth;
+        let h = img.naturalHeight;
+        if (w > maxW || h > maxH) {
+          if (w > h) {
+            h = Math.round((h * maxW) / w);
+            w = maxW;
+          } else {
+            w = Math.round((w * maxH) / h);
+            h = maxH;
+          }
+        }
+        const canvas = document.createElement("canvas");
+        canvas.width = w;
+        canvas.height = h;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) {
+          const reader = new FileReader();
+          reader.onload = () => resolve(String(reader.result));
+          reader.onerror = () => reject(new Error("파일 읽기 실패"));
+          reader.readAsDataURL(file);
+          return;
+        }
+        ctx.drawImage(img, 0, 0, w, h);
+        const mime = file.type === "image/png" ? "image/png" : "image/jpeg";
+        const dataUrl = canvas.toDataURL(mime, 0.85);
+        resolve(dataUrl);
+      };
+      img.onerror = () => {
+        URL.revokeObjectURL(url);
+        const reader = new FileReader();
+        reader.onload = () => resolve(String(reader.result));
+        reader.onerror = () => reject(new Error("파일 읽기 실패"));
+        reader.readAsDataURL(file);
+      };
+      img.src = url;
+    });
+  };
+
   const uploadImageToCafe24 = async (fieldKey: string, file: File) => {
     if (!file.type.startsWith("image/") || !mallId.trim()) return;
     setUploadError(null);
     setUploadingImageField(fieldKey);
     try {
-      const base64 = await new Promise<string>((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => {
-          const result = reader.result;
-          resolve(typeof result === "string" ? result : "");
-        };
-        reader.onerror = () => reject(new Error("파일 읽기 실패"));
-        reader.readAsDataURL(file);
-      });
+      const base64 = await compressImageForUpload(file);
       const res = await fetch("/api/products/images", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ mall_id: mallId.trim(), image: base64 }),
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "업로드 실패");
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        if (res.status === 413) throw new Error("이미지 용량이 너무 큽니다. 더 작은 사진을 선택하거나 압축 후 다시 시도해 주세요.");
+        throw new Error(data.error || "업로드 실패");
+      }
       const path = data.path;
       if (path) {
         setTemplateFormValues((prev) => ({ ...prev, [fieldKey]: path }));
