@@ -202,12 +202,11 @@ function DashboardContent() {
   const sendPreviewToWindow = (productNo: string, htmlOverride?: string) => {
     const win = previewWindowRef.current;
     if (!win || win.closed) return;
-    const html =
-      htmlOverride ??
-      (previewHtmlRef.current ||
-        editedDescriptions[productNo] ??
-        (selectedProductNo === productNo ? selectedProductDetail?.description : undefined) ??
-        "");
+    const fallback =
+      editedDescriptions[productNo] ??
+      (selectedProductNo === productNo ? selectedProductDetail?.description : undefined) ??
+      "";
+    const html = htmlOverride ?? (previewHtmlRef.current || fallback);
     win.postMessage(
       { type: PREVIEW_MESSAGE_TYPE, html: buildPreviewDocument(html) },
       window.location.origin
