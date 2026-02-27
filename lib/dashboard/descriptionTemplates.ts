@@ -125,6 +125,38 @@ function getSectionsHtml(): string {
 </section>`;
 }
 
+/** 템플릿 B 전용: 프리미엄 상세 레이아웃 (동일 플레이스홀더·클래스명 유지) */
+function getSectionsHtmlB(): string {
+  return `
+<section class="pd-sec pd-sec1 pd-sec1-b" data-reveal>
+  <div class="pd-sec1-hero">
+    <div class="pd-sec1-img"><img src="{{sec1_imageUrl}}" alt="" onerror="this.style.display='none'"/></div>
+  </div>
+  <div class="pd-sec1-card"><div class="pd-sec1-text">{{sec1_text}}</div></div>
+</section>
+<section class="pd-sec pd-sec2 pd-sec2-b" data-reveal>
+  <div class="pd-sec2-inner">
+    <div class="pd-sec2-text-wrap"><div class="pd-sec2-text">{{sec2_text}}</div></div>
+    <div class="pd-sec2-img"><img src="{{sec2_imageUrl}}" alt="" onerror="this.style.display='none'"/></div>
+  </div>
+</section>
+<section class="pd-sec pd-sec3 pd-sec3-b" data-reveal>
+  <p class="pd-sec-label">Detail</p>
+  <h3 class="pd-sec3-title">상세 정보</h3>
+  <div class="pd-accordion">{{sec3_items}}</div>
+</section>
+<section class="pd-sec pd-sec4 pd-sec4-b" data-reveal>
+  <p class="pd-sec-label">Video</p>
+  <h3 class="pd-sec4-title">동영상</h3>
+  {{sec4_videoEmbed}}
+</section>
+<section class="pd-sec pd-sec5 pd-sec5-b" data-reveal>
+  <p class="pd-sec-label">FAQ</p>
+  <h3 class="pd-sec5-title">자주 묻는 질문</h3>
+  <div class="pd-qa-list">{{sec5_qa}}</div>
+</section>`;
+}
+
 /** 테마 A: 밝고 심플, 연한 그레이 톤 */
 function getThemeStylesA(): string {
   return `
@@ -159,37 +191,189 @@ function getThemeStylesA(): string {
 `;
 }
 
-/** 테마 B: 강한 대비, 다크 악센트 */
+/** 테마 B: 프리미엄 상세 – 여백·타이포·카드로 정돈된 레이아웃 */
 function getThemeStylesB(): string {
   return `
-.pd-detail.pd-theme-b { font-family: 'Malgun Gothic', sans-serif; max-width: 720px; margin: 0 auto; padding: 24px 16px; color: #1f2937; background: linear-gradient(180deg, #fefce8 0%, #fff 30%); }
-.pd-detail.pd-theme-b .pd-sec { padding: 40px 0; border-bottom: 2px solid #fde68a; }
-.pd-detail.pd-theme-b .pd-sec:last-child { border-bottom: none; }
-.pd-detail.pd-theme-b .pd-sec1-inner,
-.pd-detail.pd-theme-b .pd-sec2-inner { display: flex; align-items: center; gap: 28px; flex-wrap: wrap; }
-.pd-detail.pd-theme-b .pd-sec1-img,
-.pd-detail.pd-theme-b .pd-sec2-img { flex: 1 1 280px; box-shadow: 0 4px 14px rgba(0,0,0,0.1); border-radius: 12px; overflow: hidden; }
-.pd-detail.pd-theme-b .pd-sec1-img img,
-.pd-detail.pd-theme-b .pd-sec2-img img { width: 100%; height: auto; display: block; background: #fef3c7; }
-.pd-detail.pd-theme-b .pd-sec1-text,
-.pd-detail.pd-theme-b .pd-sec2-text { flex: 1 1 280px; line-height: 1.8; white-space: pre-wrap; font-size: 1.02rem; }
+.pd-detail.pd-theme-b {
+  font-family: 'Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 0 20px 48px;
+  color: #374151;
+  background: linear-gradient(180deg, #fafaf9 0%, #ffffff 12%);
+  line-height: 1.65;
+}
+.pd-detail.pd-theme-b .pd-sec { padding: 48px 0; }
+.pd-detail.pd-theme-b .pd-sec-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #a8a29e;
+  margin: 0 0 6px;
+}
+.pd-detail.pd-theme-b .pd-sec1-b { padding-top: 0; }
+.pd-detail.pd-theme-b .pd-sec1-hero {
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04);
+  margin-bottom: 24px;
+}
+.pd-detail.pd-theme-b .pd-sec1-img img {
+  width: 100%;
+  height: auto;
+  display: block;
+  vertical-align: middle;
+  background: #f5f5f4;
+}
+.pd-detail.pd-theme-b .pd-sec1-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 28px 24px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  border: 1px solid #f0efed;
+}
+.pd-detail.pd-theme-b .pd-sec1-text {
+  white-space: pre-wrap;
+  font-size: 0.9375rem;
+  color: #44403c;
+  line-height: 1.75;
+}
+.pd-detail.pd-theme-b .pd-sec2-b { padding-top: 24px; }
+.pd-detail.pd-theme-b .pd-sec2-inner {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+  flex-wrap: wrap;
+}
+.pd-detail.pd-theme-b .pd-sec2-text-wrap {
+  flex: 1 1 280px;
+  border-left: 3px solid #d6d3d1;
+  padding-left: 20px;
+}
+.pd-detail.pd-theme-b .pd-sec2-text {
+  white-space: pre-wrap;
+  font-size: 0.9375rem;
+  color: #44403c;
+  line-height: 1.75;
+}
+.pd-detail.pd-theme-b .pd-sec2-img {
+  flex: 1 1 280px;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04);
+}
+.pd-detail.pd-theme-b .pd-sec2-img img {
+  width: 100%;
+  height: auto;
+  display: block;
+  background: #f5f5f4;
+}
 .pd-detail.pd-theme-b .pd-sec3-title,
 .pd-detail.pd-theme-b .pd-sec4-title,
-.pd-detail.pd-theme-b .pd-sec5-title { margin: 0 0 20px; font-size: 1.15rem; color: #92400e; border-left: 4px solid #f59e0b; padding-left: 12px; }
-.pd-detail.pd-theme-b .pd-accordion-item { border: 2px solid #fde68a; border-radius: 12px; margin-bottom: 10px; overflow: hidden; background: #fffbeb; }
-.pd-detail.pd-theme-b .pd-accordion-head { width: 100%; padding: 16px 18px; text-align: left; font-size: 1rem; font-weight: 700; color: #78350f; background: #fef3c7; border: none; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
-.pd-detail.pd-theme-b .pd-accordion-head::after { content: '▼'; font-size: 0.75rem; transition: transform 0.3s; }
-.pd-detail.pd-theme-b .pd-accordion-item[data-open] .pd-accordion-head::after { transform: rotate(-180deg); }
-.pd-detail.pd-theme-b .pd-accordion-body { max-height: 0; overflow: hidden; transition: max-height 0.35s ease; }
-.pd-detail.pd-theme-b .pd-accordion-body-inner { padding: 18px; line-height: 1.7; color: #57534e; border-top: 2px solid #fde68a; background: #fff; }
-.pd-detail.pd-theme-b .pd-video-wrap { position: relative; width: 100%; padding-bottom: 56.25%; height: 0; border-radius: 12px; overflow: hidden; background: #000; box-shadow: 0 4px 14px rgba(0,0,0,0.15); }
-.pd-detail.pd-theme-b .pd-video-wrap iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
-.pd-detail.pd-theme-b .pd-qa-item { border-bottom: 2px solid #fde68a; padding: 18px 0; }
-.pd-detail.pd-theme-b .pd-qa-item:last-child { border-bottom: none; }
-.pd-detail.pd-theme-b .pd-qa-q { font-weight: 700; color: #78350f; margin-bottom: 8px; font-size: 1.02rem; }
-.pd-detail.pd-theme-b .pd-qa-a { font-size: 0.95rem; color: #57534e; line-height: 1.7; }
+.pd-detail.pd-theme-b .pd-sec5-title {
+  margin: 0 0 20px;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1c1917;
+  letter-spacing: -0.01em;
+}
+.pd-detail.pd-theme-b .pd-accordion-item {
+  background: #fff;
+  border: 1px solid #e7e5e4;
+  border-radius: 12px;
+  margin-bottom: 10px;
+  overflow: hidden;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.pd-detail.pd-theme-b .pd-accordion-item:hover { border-color: #d6d3d1; }
+.pd-detail.pd-theme-b .pd-accordion-item[data-open] { box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+.pd-detail.pd-theme-b .pd-accordion-head {
+  width: 100%;
+  padding: 18px 20px;
+  text-align: left;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #1c1917;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background 0.2s;
+}
+.pd-detail.pd-theme-b .pd-accordion-head:hover { background: #fafaf9; }
+.pd-detail.pd-theme-b .pd-accordion-head::after {
+  content: '';
+  width: 18px;
+  height: 18px;
+  border-right: 2px solid #a8a29e;
+  border-bottom: 2px solid #a8a29e;
+  transform: rotate(45deg);
+  margin-left: 12px;
+  flex-shrink: 0;
+  transition: transform 0.25s ease, border-color 0.2s;
+}
+.pd-detail.pd-theme-b .pd-accordion-item[data-open] .pd-accordion-head::after {
+  transform: rotate(-135deg);
+  border-color: #1c1917;
+}
+.pd-detail.pd-theme-b .pd-accordion-body { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
+.pd-detail.pd-theme-b .pd-accordion-body-inner {
+  padding: 0 20px 20px;
+  line-height: 1.7;
+  color: #57534e;
+  font-size: 0.9375rem;
+  border-top: none;
+}
+.pd-detail.pd-theme-b .pd-video-wrap {
+  position: relative;
+  width: 100%;
+  padding-bottom: 56.25%;
+  height: 0;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #0c0c0c;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.06);
+}
+.pd-detail.pd-theme-b .pd-video-wrap iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+.pd-detail.pd-theme-b .pd-qa-item {
+  background: #fff;
+  border: 1px solid #e7e5e4;
+  border-radius: 12px;
+  padding: 20px 22px;
+  margin-bottom: 10px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.pd-detail.pd-theme-b .pd-qa-item:last-child { margin-bottom: 0; }
+.pd-detail.pd-theme-b .pd-qa-item:hover { border-color: #d6d3d1; }
+.pd-detail.pd-theme-b .pd-qa-q {
+  font-weight: 600;
+  color: #1c1917;
+  font-size: 0.9375rem;
+  margin-bottom: 10px;
+  padding-left: 14px;
+  border-left: 3px solid #d6d3d1;
+}
+.pd-detail.pd-theme-b .pd-qa-a {
+  font-size: 0.875rem;
+  color: #57534e;
+  line-height: 1.7;
+  padding-left: 14px;
+}
 .pd-detail.pd-theme-b .pd-sec[data-visible] { opacity: 1; transform: translateY(0); }
-.pd-detail.pd-theme-b .pd-sec { opacity: 0; transform: translateY(24px); transition: opacity 0.55s ease, transform 0.55s ease; }
+.pd-detail.pd-theme-b .pd-sec {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
 `;
 }
 
@@ -272,7 +456,8 @@ function getScript(): string {
 
 function buildFullHtml(theme: ThemeId): string {
   const themeClass = theme === "A" ? "pd-theme-a" : theme === "B" ? "pd-theme-b" : "pd-theme-c";
-  return `<style>${getThemeStyles(theme)}</style><div class="pd-detail ${themeClass}">${getSectionsHtml()}</div><script>${getScript()}</script>`;
+  const sectionsHtml = theme === "B" ? getSectionsHtmlB() : getSectionsHtml();
+  return `<style>${getThemeStyles(theme)}</style><div class="pd-detail ${themeClass}">${sectionsHtml}</div><script>${getScript()}</script>`;
 }
 
 function getTemplateA(): DescriptionTemplate {
@@ -288,8 +473,8 @@ function getTemplateA(): DescriptionTemplate {
 function getTemplateB(): DescriptionTemplate {
   return {
     id: "B",
-    name: "템플릿 B – 웜 악센트",
-    description: "따뜻한 노란/앰버 악센트, 같은 5섹션 구조",
+    name: "템플릿 B – 프리미엄 상세",
+    description: "여백·카드·타이포가 정돈된 상세 페이지. 히어로 이미지, 세로 악센트, 아코디언·Q&A 카드형.",
     fields: [...COMMON_FIELDS],
     html: buildFullHtml("B"),
   };
