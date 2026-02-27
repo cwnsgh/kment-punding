@@ -436,6 +436,7 @@ function getThemeStylesC(): string {
   background: #fafafa;
 }
 .pd-detail.pd-theme-c .pd-sec1-text {
+  font-family: Georgia, 'Times New Roman', 'Malgun Gothic', serif;
   white-space: pre-wrap;
   font-size: 0.9375rem;
   color: #404040;
@@ -443,7 +444,9 @@ function getThemeStylesC(): string {
   padding-top: 24px;
   border-top: 1px solid #e5e5e5;
 }
-.pd-detail.pd-theme-c .pd-sec2-c .pd-sec2-text {
+.pd-detail.pd-theme-c .pd-sec2-c .pd-sec2-text,
+.pd-detail.pd-theme-c .pd-sec2-text {
+  font-family: Georgia, 'Times New Roman', 'Malgun Gothic', serif;
   white-space: pre-wrap;
   font-size: 0.9375rem;
   color: #404040;
