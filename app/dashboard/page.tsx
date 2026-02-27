@@ -70,11 +70,45 @@ function DashboardContent() {
   const [templateFormValues, setTemplateFormValues] = useState<Record<string, string>>({});
   const [savingProductNo, setSavingProductNo] = useState<string | null>(null);
   const [saveError, setSaveError] = useState<string | null>(null);
+  const [uploadingImageField, setUploadingImageField] = useState<string | null>(null);
+  const [uploadError, setUploadError] = useState<string | null>(null);
 
   const previewWindowRef = useRef<Window | null>(null);
   const [previewWindowProductNo, setPreviewWindowProductNo] = useState<string | null>(null);
   const previewProductNoRef = useRef<string | null>(null);
   const previewHtmlRef = useRef<string>("");
+
+  const uploadImageToCafe24 = async (fieldKey: string, file: File) => {
+    if (!file.type.startsWith("image/") || !mallId.trim()) return;
+    setUploadError(null);
+    setUploadingImageField(fieldKey);
+    try {
+      const base64 = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const result = reader.result;
+          resolve(typeof result === "string" ? result : "");
+        };
+        reader.onerror = () => reject(new Error("파일 읽기 실패"));
+        reader.readAsDataURL(file);
+      });
+      const res = await fetch("/api/products/images", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ mall_id: mallId.trim(), image: base64 }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "업로드 실패");
+      const path = data.path;
+      if (path) {
+        setTemplateFormValues((prev) => ({ ...prev, [fieldKey]: path }));
+      }
+    } catch (e) {
+      setUploadError(e instanceof Error ? e.message : "이미지 업로드 실패");
+    } finally {
+      setUploadingImageField(null);
+    }
+  };
 
   const loadProducts = async (searchKeyword?: string) => {
     if (!mallId.trim()) return;
@@ -376,6 +410,11 @@ function DashboardContent() {
                       </label>
                       <p className={styles.templateDesc}>{selectedTemplate.description}</p>
                       <div className={styles.templateForm}>
+                        {uploadError && (
+                          <div className={styles.errorBox} role="alert">
+                            <span>업로드 오류: {uploadError}</span>
+                          </div>
+                        )}
                         {selectedTemplate.fields.map((field) => (
                           <div key={field.key} className={styles.templateField}>
                             <label className={styles.templateFieldLabel}>{field.label}</label>
@@ -392,6 +431,70 @@ function DashboardContent() {
                                 placeholder={field.placeholder}
                                 rows={4}
                               />
+                            ) : field.key.includes("imageUrl") ? (
+                              <div className={styles.imageUploadWrap}>
+                                <div
+                                  className={`${styles.imageUploadDropzone} ${uploadingImageField === field.key ? styles.imageUploadDropzoneActive : ""}`}
+                                  onDragOver={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                  }}
+                                  onDrop={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    const file = e.dataTransfer?.files?.[0];
+                                    if (file) uploadImageToCafe24(field.key, file);
+                                  }}
+                                  onClick={() =>
+                                    (document.getElementById(`file-${field.key}`) as HTMLInputElement)?.click()
+                                  }
+                                >
+                                  {uploadingImageField === field.key
+                                    ? "업로드 중…"
+                                    : "이미지를 여기에 드래그하거나 클릭하여 선택"}
+                                </div>
+                                <input
+                                  id={`file-${field.key}`}
+                                  type="file"
+                                  accept="image/*"
+                                  className={styles.hidden}
+                                  onChange={(e) => {
+                                    const file = e.target.files?.[0];
+                                    if (file) uploadImageToCafe24(field.key, file);
+                                    e.target.value = "";
+                                  }}
+                                />
+                                <div className={styles.imageUploadInputWrap}>
+                                  <input
+                                    type="url"
+                                    value={templateFormValues[field.key] ?? ""}
+                                    onChange={(e) =>
+                                      setTemplateFormValues((prev) => ({
+                                        ...prev,
+                                        [field.key]: e.target.value,
+                                      }))
+                                    }
+                                    className={styles.templateInput}
+                                    placeholder={field.placeholder}
+                                  />
+                                  <span className={styles.imageUploadHint}>
+                                    직접 URL 입력 또는 위에서 이미지 업로드. 저장하기를 누르기 전까지는 미리보기만 표시됩니다.
+                                  </span>
+                                  {(templateFormValues[field.key] ?? "").trim() ? (
+                                    <div className={styles.imagePreviewThumb}>
+                                      <span className={styles.imagePreviewLabel}>미리보기 (저장 시 반영)</span>
+                                      <img
+                                        src={templateFormValues[field.key] ?? ""}
+                                        alt=""
+                                        className={styles.imagePreviewImg}
+                                        onError={(e) => {
+                                          (e.target as HTMLImageElement).style.display = "none";
+                                        }}
+                                      />
+                                    </div>
+                                  ) : null}
+                                </div>
+                              </div>
                             ) : (
                               <input
                                 type={field.type === "url" ? "url" : "text"}
