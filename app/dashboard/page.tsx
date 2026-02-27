@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect, Suspense } from "react";
+import { useState, useRef, useEffect, Suspense, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
 
 const PREVIEW_MESSAGE_TYPE = "preview-html" as const;
@@ -43,9 +43,20 @@ function DashboardContent() {
   const [products, setProducts] = useState<ProductListItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
   const [selectedProductNo, setSelectedProductNo] = useState<string | null>(null);
   const [selectedProductDetail, setSelectedProductDetail] = useState<ProductItem | null>(null);
   const [detailLoading, setDetailLoading] = useState(false);
+
+  const filteredProducts = useMemo(() => {
+    if (!searchQuery.trim()) return products;
+    const q = searchQuery.trim().toLowerCase();
+    return products.filter(
+      (item) =>
+        item.productName.toLowerCase().includes(q) ||
+        item.productNo.toLowerCase().includes(q)
+    );
+  }, [products, searchQuery]);
   const [editedDescriptions, setEditedDescriptions] = useState<Record<string, string>>({});
   const [savingProductNo, setSavingProductNo] = useState<string | null>(null);
   const [saveError, setSaveError] = useState<string | null>(null);
@@ -54,29 +65,42 @@ function DashboardContent() {
   const [previewWindowProductNo, setPreviewWindowProductNo] = useState<string | null>(null);
   const previewProductNoRef = useRef<string | null>(null);
 
-  const loadProducts = async () => {
+  const loadProducts = async (searchKeyword?: string) => {
     if (!mallId.trim()) return;
     setError(null);
     setSelectedProductNo(null);
     setSelectedProductDetail(null);
     setLoading(true);
     try {
-      const res = await fetch(
-        `/api/products/list?mall_id=${encodeURIComponent(mallId.trim())}&limit=50`
-      );
+      const params = new URLSearchParams({
+        mall_id: mallId.trim(),
+        limit: searchKeyword ? "100" : "50",
+      });
+      if (searchKeyword?.trim()) {
+        const trimmed = searchKeyword.trim();
+        params.set("product_name", trimmed);
+        if (/^\d+$/.test(trimmed)) params.set("product_no", trimmed);
+      }
+      const res = await fetch(`/api/products/list?${params.toString()}`);
       const data = await res.json();
-      const list = (data.products || []).slice(0, 50) as {
+      const list = (data.products || []) as {
         product_no: string;
         product_name: string;
       }[];
-      if (list.length === 0) {
+      const max = searchKeyword ? 100 : 50;
+      const sliced = list.slice(0, max);
+      if (sliced.length === 0) {
         setProducts([]);
-        setError(data.error || "상품이 없습니다.");
+        setError(
+          searchKeyword
+            ? "검색 결과가 없습니다. 다른 검색어로 시도해 보세요."
+            : data.error || "상품이 없습니다."
+        );
         setLoading(false);
         return;
       }
       setProducts(
-        list.map((p) => ({
+        sliced.map((p) => ({
           productNo: p.product_no,
           productName: p.product_name || `상품 #${p.product_no}`,
         }))
@@ -87,6 +111,10 @@ function DashboardContent() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const runMallSearch = () => {
+    loadProducts(searchQuery.trim() || undefined);
   };
 
   const openProductDetail = async (productNo: string) => {
@@ -205,13 +233,15 @@ function DashboardContent() {
 
   if (!mallId) {
     return (
-      <div className="min-h-screen bg-gray-50 p-6 flex items-center justify-center">
-        <div className="text-center max-w-md">
-          <h1 className="text-xl font-semibold text-gray-900 mb-2">
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6">
+        <div className="text-center max-w-md rounded-2xl bg-white p-8 shadow-sm border border-slate-200">
+          <h1 className="text-lg font-semibold text-slate-800 mb-2">
             쇼핑몰 정보가 없습니다
           </h1>
-          <p className="text-sm text-gray-600 mb-4">
-            mall_id 쿼리로 접속해 주세요. (예: /dashboard?mall_id=스토어아이디)
+          <p className="text-sm text-slate-500">
+            mall_id 쿼리로 접속해 주세요.
+            <br />
+            <span className="font-mono text-slate-600">/dashboard?mall_id=스토어아이디</span>
           </p>
         </div>
       </div>
@@ -225,53 +255,57 @@ function DashboardContent() {
   const isSaving = p ? savingProductNo === p.productNo : false;
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-[1230px] mx-auto w-full">
-        <div className="mb-6 flex items-center gap-4">
-          <h1 className="text-xl font-semibold text-gray-900">
-            description 포맷 테스트
+    <div className="min-h-screen bg-slate-50 p-6 md:p-8">
+      <div className="max-w-[1200px] mx-auto w-full">
+        <header className="mb-8">
+          <h1 className="text-xl font-semibold text-slate-800 tracking-tight">
+            Description 포맷 테스트
           </h1>
-          <span className="text-xs text-gray-500">({mallId})</span>
-        </div>
+          <p className="mt-1 text-sm text-slate-500">
+            쇼핑몰 <span className="font-medium text-slate-600">{mallId}</span>
+          </p>
+        </header>
 
         {p ? (
           /* 상세 뷰: 한 상품 description 편집 */
           <>
-            <div className="mb-4">
+            <div className="mb-5">
               <button
                 type="button"
                 onClick={backToList}
-                className="text-sm text-gray-600 hover:text-gray-900 hover:underline flex items-center gap-1"
+                className="inline-flex items-center gap-1.5 text-sm text-slate-600 hover:text-slate-900 transition-colors"
               >
-                ← 목록으로
+                <span aria-hidden>←</span> 목록으로
               </button>
             </div>
             {saveError && (
-              <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md text-sm text-red-700">
+              <div className="mb-5 p-4 rounded-xl bg-red-50 border border-red-100 text-sm text-red-700">
                 저장 오류: {saveError}
               </div>
             )}
-            <div className="border border-gray-200 rounded-lg bg-white p-4">
-              <div className="flex items-center justify-between gap-2 mb-3">
-                <div className="flex items-baseline gap-2">
-                  <span className="font-medium text-gray-900">
+            <div className="rounded-2xl bg-white border border-slate-200/80 shadow-sm overflow-hidden">
+              <div className="px-6 py-4 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between gap-4 flex-wrap">
+                <div className="flex items-baseline gap-2 min-w-0">
+                  <span className="font-medium text-slate-800 truncate">
                     {p.productName}
                   </span>
-                  <span className="text-xs text-gray-500">#{p.productNo}</span>
+                  <span className="text-xs text-slate-400 font-mono shrink-0">
+                    #{p.productNo}
+                  </span>
                 </div>
                 <button
                   type="button"
                   onClick={() => saveDescription(p.productNo)}
                   disabled={isSaving}
-                  className="px-3 py-1.5 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-green-700 disabled:opacity-50"
+                  className="px-4 py-2 rounded-lg bg-emerald-600 text-white text-sm font-medium hover:bg-emerald-700 disabled:opacity-50 transition-colors shrink-0"
                 >
                   {isSaving ? "저장 중…" : "저장"}
                 </button>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-[380px_1fr] gap-6">
+              <div className="p-6 grid grid-cols-1 lg:grid-cols-[380px_1fr] gap-6">
                 <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">
-                    description (편집 가능)
+                  <label className="block text-xs font-medium text-slate-600 mb-2 uppercase tracking-wider">
+                    Description (편집)
                   </label>
                   <textarea
                     value={currentText}
@@ -281,25 +315,25 @@ function DashboardContent() {
                         [p.productNo]: e.target.value,
                       }))
                     }
-                    className="w-full min-h-[360px] max-h-[520px] px-3 py-2 border border-gray-200 rounded-md font-mono text-xs overflow-auto whitespace-pre-wrap break-words bg-gray-50 text-gray-900 resize-y"
+                    className="w-full min-h-[360px] max-h-[520px] px-4 py-3 rounded-xl border border-slate-200 font-mono text-xs overflow-auto whitespace-pre-wrap break-words bg-slate-50/80 text-slate-800 resize-y focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-400 outline-none transition-shadow"
                     placeholder="(없음)"
                     spellCheck={false}
                   />
                 </div>
                 <div>
-                  <div className="flex items-center justify-between gap-2 mb-1">
-                    <label className="block text-xs font-medium text-gray-700">
-                      미리보기 (style 포함, iframe 격리)
+                  <div className="flex items-center justify-between gap-2 mb-2">
+                    <label className="block text-xs font-medium text-slate-600 uppercase tracking-wider">
+                      미리보기
                     </label>
                     <button
                       type="button"
                       onClick={() => openPreviewInNewWindow(p.productNo)}
-                      className="text-xs text-blue-600 hover:text-blue-800 hover:underline"
+                      className="text-xs text-emerald-600 hover:text-emerald-700 font-medium"
                     >
-                      미리보기 새 창으로
+                      새 창으로 열기
                     </button>
                   </div>
-                  <div className="w-full min-h-[360px] max-h-[520px] border border-gray-200 rounded-md overflow-hidden bg-white">
+                  <div className="w-full min-h-[360px] max-h-[520px] rounded-xl border border-slate-200 overflow-hidden bg-white">
                     <iframe
                       key={`preview-${p.productNo}-${currentText}`}
                       title="description 미리보기"
@@ -313,68 +347,114 @@ function DashboardContent() {
             </div>
           </>
         ) : (
-          /* 목록 뷰: 상품 목록만 표시 */
+          /* 목록 뷰: 검색 + 상품 목록 */
           <>
-            <p className="text-sm text-gray-600 mb-4">
-              상품 목록을 불러온 뒤, 편집할 상품을 클릭하면 description 수정
+            <p className="text-sm text-slate-600 mb-6">
+              상품 목록을 불러온 뒤 검색하거나, 편집할 상품을 클릭하면 description 수정
               페이지로 이동합니다.
             </p>
-            <div className="mb-6">
-              <button
-                type="button"
-                onClick={loadProducts}
-                disabled={loading}
-                className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 disabled:opacity-50"
-              >
-                {loading ? "불러오는 중…" : "상품 불러오기"}
-              </button>
+            <div className="mb-6 flex flex-col gap-3">
+              <div className="flex flex-col sm:flex-row gap-3 sm:items-center">
+                <button
+                  type="button"
+                  onClick={() => loadProducts()}
+                  disabled={loading}
+                  className="px-5 py-2.5 rounded-xl bg-slate-800 text-white text-sm font-medium hover:bg-slate-700 disabled:opacity-50 transition-colors shrink-0"
+                >
+                  {loading ? "불러오는 중…" : "상품 불러오기"}
+                </button>
+                <div className="relative flex-1 max-w-md flex gap-2">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                  </span>
+                  <input
+                    type="search"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && runMallSearch()}
+                    placeholder="상품번호 또는 상품명 (전체 검색 시 입력 후 버튼 클릭)"
+                    className="flex-1 min-w-0 pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 bg-white text-slate-800 text-sm placeholder:text-slate-400 focus:ring-2 focus:ring-slate-400/20 focus:border-slate-400 outline-none transition-shadow"
+                  />
+                  <button
+                    type="button"
+                    onClick={runMallSearch}
+                    disabled={loading}
+                    className="px-4 py-2.5 rounded-xl bg-emerald-600 text-white text-sm font-medium hover:bg-emerald-700 disabled:opacity-50 transition-colors shrink-0"
+                  >
+                    쇼핑몰 전체 검색
+                  </button>
+                </div>
+              </div>
+              <p className="text-xs text-slate-500">
+                「상품 불러오기」: 최근 상품 50개 · 「쇼핑몰 전체 검색」: 검색어로 쇼핑몰 전체에서 검색 (최대 100건)
+              </p>
             </div>
             {error && (
-              <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md text-sm text-red-700">
+              <div className="mb-5 p-4 rounded-xl bg-red-50 border border-red-100 text-sm text-red-700">
                 {error}
               </div>
             )}
             {products.length > 0 && (
-              <div className="border border-gray-200 rounded-lg bg-white overflow-hidden">
-                <table className="w-full text-left text-sm">
-                  <thead>
-                    <tr className="bg-gray-50 border-b border-gray-200">
-                      <th className="px-4 py-3 font-medium text-gray-700">
-                        상품번호
-                      </th>
-                      <th className="px-4 py-3 font-medium text-gray-700">
-                        상품명
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {products.map((item) => (
-                      <tr
-                        key={item.productNo}
-                        onClick={() => openProductDetail(item.productNo)}
-                        className="border-b border-gray-100 last:border-0 hover:bg-blue-50 cursor-pointer transition-colors"
-                      >
-                        <td className="px-4 py-3 text-gray-500 font-mono">
-                          #{item.productNo}
-                        </td>
-                        <td className="px-4 py-3 text-gray-900">
-                          {item.productName}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-                {detailLoading && (
-                  <div className="px-4 py-2 bg-blue-50 text-blue-700 text-sm">
-                    상품 정보 불러오는 중…
+              <>
+                {filteredProducts.length > 0 ? (
+                  <div className="rounded-2xl bg-white border border-slate-200/80 shadow-sm overflow-hidden">
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-left text-sm">
+                        <thead>
+                          <tr className="bg-slate-50/80 border-b border-slate-200">
+                            <th className="px-5 py-3.5 font-medium text-slate-600">
+                              상품번호
+                            </th>
+                            <th className="px-5 py-3.5 font-medium text-slate-600">
+                              상품명
+                            </th>
+                            <th className="w-10 px-2" aria-hidden />
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {filteredProducts.map((item) => (
+                            <tr
+                              key={item.productNo}
+                              onClick={() => openProductDetail(item.productNo)}
+                              className="border-b border-slate-100 last:border-0 hover:bg-slate-50 cursor-pointer transition-colors group"
+                            >
+                              <td className="px-5 py-3.5 text-slate-500 font-mono text-xs">
+                                #{item.productNo}
+                              </td>
+                              <td className="px-5 py-3.5 text-slate-800 font-medium">
+                                {item.productName}
+                              </td>
+                              <td className="px-2 text-slate-400 group-hover:text-slate-600">
+                                <span aria-hidden>→</span>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                    {detailLoading && (
+                      <div className="px-5 py-3 bg-slate-50 border-t border-slate-100 text-slate-600 text-sm">
+                        상품 정보 불러오는 중…
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="rounded-2xl bg-white border border-slate-200/80 p-10 text-center">
+                    <p className="text-slate-500 text-sm">
+                      검색 결과가 없습니다. 다른 검색어를 입력해 보세요.
+                    </p>
                   </div>
                 )}
-              </div>
+              </>
             )}
             {products.length === 0 && !loading && !error && (
-              <p className="text-sm text-gray-500">
-                「상품 불러오기」를 누르면 현재 쇼핑몰 상품이 나열됩니다.
-              </p>
+              <div className="rounded-2xl bg-white border border-slate-200/80 p-10 text-center">
+                <p className="text-sm text-slate-500">
+                  「상품 불러오기」를 누르면 현재 쇼핑몰 상품이 나열됩니다.
+                </p>
+              </div>
             )}
           </>
         )}
@@ -387,8 +467,8 @@ export default function DashboardPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-          <p className="text-sm text-gray-500">로딩 중…</p>
+        <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+          <p className="text-sm text-slate-500">로딩 중…</p>
         </div>
       }
     >

@@ -13,6 +13,8 @@ export async function GET(req: NextRequest) {
     const mallId = searchParams.get("mall_id");
     const limit = parseInt(searchParams.get("limit") || "100");
     const offset = parseInt(searchParams.get("offset") || "0");
+    const productName = searchParams.get("product_name")?.trim() || undefined;
+    const productNo = searchParams.get("product_no")?.trim() || undefined;
 
     if (!mallId) {
       return NextResponse.json(
@@ -21,7 +23,13 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    logger.info("상품 목록 조회 시작", { mallId, limit, offset });
+    logger.info("상품 목록 조회 시작", {
+      mallId,
+      limit,
+      offset,
+      productName: productName ?? null,
+      productNo: productNo ?? null,
+    });
 
     // 유효한 액세스 토큰 가져오기
     const accessToken = await getValidAccessToken(mallId);
@@ -32,18 +40,26 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    // 카페24 상품 목록 API 호출
-    const cafe24Response = await fetch(
-      `https://${mallId}.${config.cafe24.baseUrl}/api/v2/admin/products?offset=${offset}&limit=${limit}&fields=product_no,product_code,product_name,price,retail_price,display,selling`,
-      {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "application/json",
-          "X-Cafe24-Api-Version": config.cafe24.apiVersion,
-        },
-      }
+    const url = new URL(
+      `https://${mallId}.${config.cafe24.baseUrl}/api/v2/admin/products`
     );
+    url.searchParams.set("offset", String(offset));
+    url.searchParams.set("limit", String(limit));
+    url.searchParams.set(
+      "fields",
+      "product_no,product_code,product_name,price,retail_price,display,selling"
+    );
+    if (productName) url.searchParams.set("product_name", productName);
+    if (productNo) url.searchParams.set("product_no", productNo);
+
+    const cafe24Response = await fetch(url.toString(), {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+        "X-Cafe24-Api-Version": config.cafe24.apiVersion,
+      },
+    });
 
     if (!cafe24Response.ok) {
       const errorText = await cafe24Response.text();
