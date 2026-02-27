@@ -85,8 +85,8 @@ function DashboardContent() {
       const url = URL.createObjectURL(file);
       img.onload = () => {
         URL.revokeObjectURL(url);
-        const maxW = 1600;
-        const maxH = 1600;
+        const maxW = 2400;
+        const maxH = 2400;
         let w = img.naturalWidth;
         let h = img.naturalHeight;
         if (w > maxW || h > maxH) {
@@ -111,7 +111,7 @@ function DashboardContent() {
         }
         ctx.drawImage(img, 0, 0, w, h);
         const mime = file.type === "image/png" ? "image/png" : "image/jpeg";
-        const dataUrl = canvas.toDataURL(mime, 0.85);
+        const dataUrl = canvas.toDataURL(mime, 0.92);
         resolve(dataUrl);
       };
       img.onerror = () => {
