@@ -233,15 +233,18 @@ function DashboardContent() {
 
   if (!mallId) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6">
-        <div className="text-center max-w-md rounded-2xl bg-white p-8 shadow-sm border border-slate-200">
+      <div className="min-h-screen bg-gradient-to-b from-slate-100 to-slate-50 flex items-center justify-center p-6">
+        <div className="text-center max-w-md rounded-2xl bg-white p-10 shadow-lg border border-slate-200/80">
+          <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center mx-auto mb-4 text-slate-400">
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
+          </div>
           <h1 className="text-lg font-semibold text-slate-800 mb-2">
             쇼핑몰 정보가 없습니다
           </h1>
-          <p className="text-sm text-slate-500">
+          <p className="text-sm text-slate-500 leading-relaxed">
             mall_id 쿼리로 접속해 주세요.
             <br />
-            <span className="font-mono text-slate-600">/dashboard?mall_id=스토어아이디</span>
+            <code className="mt-2 inline-block px-2 py-1 rounded bg-slate-100 text-slate-600 text-xs font-mono">/dashboard?mall_id=스토어아이디</code>
           </p>
         </div>
       </div>
@@ -255,57 +258,63 @@ function DashboardContent() {
   const isSaving = p ? savingProductNo === p.productNo : false;
 
   return (
-    <div className="min-h-screen bg-slate-50 p-6 md:p-8">
-      <div className="max-w-[1200px] mx-auto w-full">
-        <header className="mb-8">
-          <h1 className="text-xl font-semibold text-slate-800 tracking-tight">
-            Description 포맷 테스트
-          </h1>
-          <p className="mt-1 text-sm text-slate-500">
-            쇼핑몰 <span className="font-medium text-slate-600">{mallId}</span>
-          </p>
-        </header>
+    <div className="min-h-screen bg-gradient-to-b from-slate-100/80 to-slate-50 text-slate-800">
+      {/* 상단 헤더 */}
+      <header className="sticky top-0 z-10 border-b border-slate-200/80 bg-white/90 backdrop-blur-sm">
+        <div className="max-w-[1200px] mx-auto px-4 sm:px-6 py-4 flex items-center justify-between gap-4">
+          <div>
+            <h1 className="text-lg sm:text-xl font-semibold text-slate-800 tracking-tight">
+              상품 Description 편집
+            </h1>
+            <p className="mt-0.5 text-sm text-slate-500">
+              쇼핑몰 <span className="font-medium text-slate-600">{mallId}</span>
+            </p>
+          </div>
+        </div>
+      </header>
 
+      <main className="max-w-[1200px] mx-auto px-4 sm:px-6 py-6 sm:py-8">
         {p ? (
-          /* 상세 뷰: 한 상품 description 편집 */
-          <>
-            <div className="mb-5">
-              <button
-                type="button"
-                onClick={backToList}
-                className="inline-flex items-center gap-1.5 text-sm text-slate-600 hover:text-slate-900 transition-colors"
-              >
-                <span aria-hidden>←</span> 목록으로
-              </button>
-            </div>
+          /* ---------- 상세 뷰 ---------- */
+          <div className="space-y-4">
+            <button
+              type="button"
+              onClick={backToList}
+              className="inline-flex items-center gap-2 text-sm text-slate-600 hover:text-slate-900 hover:bg-slate-100 px-3 py-2 rounded-lg transition-colors"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
+              목록으로
+            </button>
+
             {saveError && (
-              <div className="mb-5 p-4 rounded-xl bg-red-50 border border-red-100 text-sm text-red-700">
-                저장 오류: {saveError}
+              <div className="flex items-start gap-3 p-4 rounded-xl bg-red-50 border border-red-100 text-red-700 text-sm">
+                <span className="shrink-0 text-red-500">⚠</span>
+                <span>저장 오류: {saveError}</span>
               </div>
             )}
-            <div className="rounded-2xl bg-white border border-slate-200/80 shadow-sm overflow-hidden">
-              <div className="px-6 py-4 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between gap-4 flex-wrap">
-                <div className="flex items-baseline gap-2 min-w-0">
-                  <span className="font-medium text-slate-800 truncate">
+
+            <section className="rounded-2xl bg-white border border-slate-200/80 shadow-sm overflow-hidden">
+              <div className="px-5 sm:px-6 py-4 bg-slate-50/70 border-b border-slate-100 flex flex-wrap items-center justify-between gap-3">
+                <div className="min-w-0 flex-1">
+                  <h2 className="font-semibold text-slate-800 truncate pr-2">
                     {p.productName}
-                  </span>
-                  <span className="text-xs text-slate-400 font-mono shrink-0">
-                    #{p.productNo}
-                  </span>
+                  </h2>
+                  <p className="text-xs text-slate-500 font-mono mt-0.5">#{p.productNo}</p>
                 </div>
                 <button
                   type="button"
                   onClick={() => saveDescription(p.productNo)}
                   disabled={isSaving}
-                  className="px-4 py-2 rounded-lg bg-emerald-600 text-white text-sm font-medium hover:bg-emerald-700 disabled:opacity-50 transition-colors shrink-0"
+                  className="shrink-0 px-5 py-2.5 rounded-xl bg-emerald-600 text-white text-sm font-medium hover:bg-emerald-700 disabled:opacity-60 transition-all active:scale-[0.98]"
                 >
-                  {isSaving ? "저장 중…" : "저장"}
+                  {isSaving ? "저장 중…" : "저장하기"}
                 </button>
               </div>
-              <div className="p-6 grid grid-cols-1 lg:grid-cols-[380px_1fr] gap-6">
-                <div>
-                  <label className="block text-xs font-medium text-slate-600 mb-2 uppercase tracking-wider">
-                    Description (편집)
+
+              <div className="p-4 sm:p-6 grid grid-cols-1 lg:grid-cols-[1fr_1fr] gap-6 lg:gap-8">
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-slate-700">
+                    HTML 편집
                   </label>
                   <textarea
                     value={currentText}
@@ -315,119 +324,138 @@ function DashboardContent() {
                         [p.productNo]: e.target.value,
                       }))
                     }
-                    className="w-full min-h-[360px] max-h-[520px] px-4 py-3 rounded-xl border border-slate-200 font-mono text-xs overflow-auto whitespace-pre-wrap break-words bg-slate-50/80 text-slate-800 resize-y focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-400 outline-none transition-shadow"
-                    placeholder="(없음)"
+                    className="w-full min-h-[380px] max-h-[560px] px-4 py-3 rounded-xl border border-slate-200 font-mono text-[13px] leading-relaxed overflow-auto whitespace-pre-wrap break-words bg-slate-50/50 text-slate-800 resize-y placeholder:text-slate-400 focus:ring-2 focus:ring-emerald-500/25 focus:border-emerald-400 outline-none transition-shadow"
+                    placeholder="상품 상세 설명 HTML을 입력하세요"
                     spellCheck={false}
                   />
                 </div>
-                <div>
-                  <div className="flex items-center justify-between gap-2 mb-2">
-                    <label className="block text-xs font-medium text-slate-600 uppercase tracking-wider">
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <label className="block text-sm font-medium text-slate-700">
                       미리보기
                     </label>
                     <button
                       type="button"
                       onClick={() => openPreviewInNewWindow(p.productNo)}
-                      className="text-xs text-emerald-600 hover:text-emerald-700 font-medium"
+                      className="text-sm text-emerald-600 hover:text-emerald-700 font-medium hover:underline"
                     >
-                      새 창으로 열기
+                      새 창에서 보기
                     </button>
                   </div>
-                  <div className="w-full min-h-[360px] max-h-[520px] rounded-xl border border-slate-200 overflow-hidden bg-white">
+                  <div className="w-full min-h-[380px] max-h-[560px] rounded-xl border border-slate-200 overflow-hidden bg-white shadow-inner">
                     <iframe
                       key={`preview-${p.productNo}-${currentText}`}
                       title="description 미리보기"
                       srcDoc={buildPreviewDocument(currentText)}
-                      className="w-full h-full min-h-[360px] border-0 block"
+                      className="w-full h-full min-h-[380px] border-0 block"
                       sandbox="allow-same-origin allow-scripts"
                     />
                   </div>
                 </div>
               </div>
-            </div>
-          </>
+            </section>
+          </div>
         ) : (
-          /* 목록 뷰: 검색 + 상품 목록 */
-          <>
-            <p className="text-sm text-slate-600 mb-6">
-              상품 목록을 불러온 뒤 검색하거나, 편집할 상품을 클릭하면 description 수정
-              페이지로 이동합니다.
-            </p>
-            <div className="mb-6 flex flex-col gap-3">
-              <div className="flex flex-col sm:flex-row gap-3 sm:items-center">
+          /* ---------- 목록 뷰 ---------- */
+          <div className="space-y-6">
+            <section className="rounded-2xl bg-white border border-slate-200/80 shadow-sm p-4 sm:p-5">
+              <h2 className="text-sm font-medium text-slate-700 mb-3">상품 조회</h2>
+              <p className="text-sm text-slate-500 mb-4 leading-relaxed">
+                최근 상품을 불러오거나, 검색어로 쇼핑몰 전체에서 검색한 뒤 원하는 상품을 클릭하면 편집 화면으로 이동합니다.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-3">
                 <button
                   type="button"
                   onClick={() => loadProducts()}
                   disabled={loading}
-                  className="px-5 py-2.5 rounded-xl bg-slate-800 text-white text-sm font-medium hover:bg-slate-700 disabled:opacity-50 transition-colors shrink-0"
+                  className="inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-slate-800 text-white text-sm font-medium hover:bg-slate-700 disabled:opacity-50 transition-colors shrink-0"
                 >
-                  {loading ? "불러오는 중…" : "상품 불러오기"}
+                  {loading ? (
+                    <>
+                      <span className="inline-block w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      불러오는 중…
+                    </>
+                  ) : (
+                    "상품 불러오기 (최근 50개)"
+                  )}
                 </button>
-                <div className="relative flex-1 max-w-md flex gap-2">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                    </svg>
-                  </span>
-                  <input
-                    type="search"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    onKeyDown={(e) => e.key === "Enter" && runMallSearch()}
-                    placeholder="상품번호 또는 상품명 (전체 검색 시 입력 후 버튼 클릭)"
-                    className="flex-1 min-w-0 pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 bg-white text-slate-800 text-sm placeholder:text-slate-400 focus:ring-2 focus:ring-slate-400/20 focus:border-slate-400 outline-none transition-shadow"
-                  />
+                <div className="flex-1 flex flex-col sm:flex-row gap-2 min-w-0">
+                  <div className="relative flex-1 min-w-0">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                    </span>
+                    <input
+                      type="search"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      onKeyDown={(e) => e.key === "Enter" && runMallSearch()}
+                      placeholder="상품번호 또는 상품명 입력 후 검색"
+                      className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 text-sm placeholder:text-slate-400 focus:ring-2 focus:ring-slate-300/50 focus:border-slate-300 focus:bg-white outline-none transition-all"
+                    />
+                  </div>
                   <button
                     type="button"
                     onClick={runMallSearch}
                     disabled={loading}
-                    className="px-4 py-2.5 rounded-xl bg-emerald-600 text-white text-sm font-medium hover:bg-emerald-700 disabled:opacity-50 transition-colors shrink-0"
+                    className="shrink-0 px-4 py-3 rounded-xl bg-emerald-600 text-white text-sm font-medium hover:bg-emerald-700 disabled:opacity-50 transition-colors"
                   >
                     쇼핑몰 전체 검색
                   </button>
                 </div>
               </div>
-              <p className="text-xs text-slate-500">
-                「상품 불러오기」: 최근 상품 50개 · 「쇼핑몰 전체 검색」: 검색어로 쇼핑몰 전체에서 검색 (최대 100건)
+              <p className="mt-3 text-xs text-slate-400">
+                전체 검색 시 최대 100건까지 표시됩니다. 이미 불러온 목록은 입력란에 필터로도 적용됩니다.
               </p>
-            </div>
+            </section>
+
             {error && (
-              <div className="mb-5 p-4 rounded-xl bg-red-50 border border-red-100 text-sm text-red-700">
-                {error}
+              <div className="flex items-start gap-3 p-4 rounded-xl bg-amber-50 border border-amber-100 text-amber-800 text-sm">
+                <span className="shrink-0">⚠</span>
+                <span>{error}</span>
               </div>
             )}
+
             {products.length > 0 && (
               <>
                 {filteredProducts.length > 0 ? (
-                  <div className="rounded-2xl bg-white border border-slate-200/80 shadow-sm overflow-hidden">
+                  <section className="rounded-2xl bg-white border border-slate-200/80 shadow-sm overflow-hidden">
+                    <div className="px-4 py-3 border-b border-slate-100 bg-slate-50/50">
+                      <h2 className="text-sm font-medium text-slate-700">
+                        상품 목록
+                        <span className="ml-2 text-slate-500 font-normal">
+                          {filteredProducts.length}
+                          {products.length !== filteredProducts.length && ` / ${products.length}`}건
+                        </span>
+                      </h2>
+                    </div>
                     <div className="overflow-x-auto">
-                      <table className="w-full text-left text-sm">
+                      <table className="w-full text-left">
                         <thead>
-                          <tr className="bg-slate-50/80 border-b border-slate-200">
-                            <th className="px-5 py-3.5 font-medium text-slate-600">
+                          <tr className="border-b border-slate-200 bg-slate-50/80">
+                            <th className="px-4 sm:px-5 py-3.5 text-xs font-semibold text-slate-500 uppercase tracking-wider w-28">
                               상품번호
                             </th>
-                            <th className="px-5 py-3.5 font-medium text-slate-600">
+                            <th className="px-4 sm:px-5 py-3.5 text-xs font-semibold text-slate-500 uppercase tracking-wider">
                               상품명
                             </th>
-                            <th className="w-10 px-2" aria-hidden />
+                            <th className="w-12 px-2" aria-hidden />
                           </tr>
                         </thead>
-                        <tbody>
+                        <tbody className="divide-y divide-slate-100">
                           {filteredProducts.map((item) => (
                             <tr
                               key={item.productNo}
                               onClick={() => openProductDetail(item.productNo)}
-                              className="border-b border-slate-100 last:border-0 hover:bg-slate-50 cursor-pointer transition-colors group"
+                              className="cursor-pointer transition-colors hover:bg-emerald-50/80 active:bg-emerald-100/50 group"
                             >
-                              <td className="px-5 py-3.5 text-slate-500 font-mono text-xs">
+                              <td className="px-4 sm:px-5 py-3.5 font-mono text-sm text-slate-500">
                                 #{item.productNo}
                               </td>
-                              <td className="px-5 py-3.5 text-slate-800 font-medium">
+                              <td className="px-4 sm:px-5 py-3.5 text-sm font-medium text-slate-800 group-hover:text-emerald-700 transition-colors">
                                 {item.productName}
                               </td>
-                              <td className="px-2 text-slate-400 group-hover:text-slate-600">
-                                <span aria-hidden>→</span>
+                              <td className="px-2 text-slate-300 group-hover:text-emerald-500 transition-colors">
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
                               </td>
                             </tr>
                           ))}
@@ -435,30 +463,34 @@ function DashboardContent() {
                       </table>
                     </div>
                     {detailLoading && (
-                      <div className="px-5 py-3 bg-slate-50 border-t border-slate-100 text-slate-600 text-sm">
+                      <div className="px-5 py-3 bg-slate-50 border-t border-slate-100 text-slate-600 text-sm flex items-center gap-2">
+                        <span className="inline-block w-4 h-4 border-2 border-slate-300 border-t-slate-600 rounded-full animate-spin" />
                         상품 정보 불러오는 중…
                       </div>
                     )}
-                  </div>
+                  </section>
                 ) : (
-                  <div className="rounded-2xl bg-white border border-slate-200/80 p-10 text-center">
+                  <div className="rounded-2xl bg-white border border-slate-200/80 p-12 text-center">
                     <p className="text-slate-500 text-sm">
-                      검색 결과가 없습니다. 다른 검색어를 입력해 보세요.
+                      검색 결과가 없습니다. 검색어를 바꿔 보세요.
                     </p>
                   </div>
                 )}
               </>
             )}
+
             {products.length === 0 && !loading && !error && (
-              <div className="rounded-2xl bg-white border border-slate-200/80 p-10 text-center">
-                <p className="text-sm text-slate-500">
-                  「상품 불러오기」를 누르면 현재 쇼핑몰 상품이 나열됩니다.
-                </p>
+              <div className="rounded-2xl bg-white border border-slate-200/80 border-dashed p-12 text-center">
+                <div className="w-14 h-14 rounded-full bg-slate-100 flex items-center justify-center mx-auto mb-4 text-slate-400">
+                  <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20 7l-8 4-8-4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg>
+                </div>
+                <p className="text-sm text-slate-500 font-medium">상품 목록이 비어 있습니다</p>
+                <p className="mt-1 text-xs text-slate-400">「상품 불러오기」 또는 검색 후 「쇼핑몰 전체 검색」을 눌러 주세요.</p>
               </div>
             )}
-          </>
+          </div>
         )}
-      </div>
+      </main>
     </div>
   );
 }
@@ -467,8 +499,11 @@ export default function DashboardPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-          <p className="text-sm text-slate-500">로딩 중…</p>
+        <div className="min-h-screen bg-gradient-to-b from-slate-100/80 to-slate-50 flex items-center justify-center">
+          <div className="flex items-center gap-3 text-slate-500">
+            <span className="inline-block w-5 h-5 border-2 border-slate-300 border-t-slate-600 rounded-full animate-spin" />
+            <span className="text-sm">로딩 중…</span>
+          </div>
         </div>
       }
     >
