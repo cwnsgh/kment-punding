@@ -233,6 +233,131 @@
   transform: scale(0.98);
 }
 
+/* ---------- template picker (A, B, C, HTML 직접 편집) ---------- */
+.templatePickerWrap {
+  padding: 0 1rem 0.75rem;
+  border-bottom: 1px solid #f1f5f9;
+  background: #fafbfc;
+}
+
+.templatePickerLabel {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #64748b;
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.templatePickerBtns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.templateBtn {
+  padding: 0.4rem 0.75rem;
+  border-radius: 0.5rem;
+  border: 1px solid #e2e8f0;
+  background: white;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #475569;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+}
+
+.templateBtn:hover {
+  border-color: #cbd5e1;
+  background: #f8fafc;
+  color: #1e293b;
+}
+
+.templateBtnActive {
+  padding: 0.4rem 0.75rem;
+  border-radius: 0.5rem;
+  border: 1px solid #059669;
+  background: #ecfdf5;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #047857;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+}
+
+.templateBtnActive:hover {
+  border-color: #059669;
+  background: #d1fae5;
+  color: #047857;
+}
+
+/* ---------- template form (필드 입력) ---------- */
+.templateDesc {
+  font-size: 0.8125rem;
+  color: #64748b;
+  margin: 0 0 1rem;
+  line-height: 1.4;
+}
+
+.templateForm {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.templateField {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.templateFieldLabel {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: #475569;
+}
+
+.templateInput {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  border: 1px solid #e2e8f0;
+  font-size: 0.875rem;
+  color: #1e293b;
+}
+
+.templateInput:focus {
+  outline: none;
+  border-color: #059669;
+  box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.15);
+}
+
+.templateInput::placeholder {
+  color: #94a3b8;
+}
+
+.templateTextarea {
+  width: 100%;
+  min-height: 80px;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  border: 1px solid #e2e8f0;
+  font-size: 0.875rem;
+  color: #1e293b;
+  resize: vertical;
+}
+
+.templateTextarea:focus {
+  outline: none;
+  border-color: #059669;
+  box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.15);
+}
+
+.templateTextarea::placeholder {
+  color: #94a3b8;
+}
+
 .detailBody {
   padding: 1rem;
   display: grid;

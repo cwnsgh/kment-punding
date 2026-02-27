@@ -3,6 +3,13 @@
 import { useState, useRef, useEffect, Suspense, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
 import styles from "./dashboard.module.css";
+import {
+  descriptionTemplates,
+  getDescriptionTemplateById,
+  fillTemplate,
+} from "@/lib/dashboard/descriptionTemplates";
+
+type EditMode = "A" | "B" | "C" | "raw";
 
 const PREVIEW_MESSAGE_TYPE = "preview-html" as const;
 
@@ -59,12 +66,15 @@ function DashboardContent() {
     );
   }, [products, searchQuery]);
   const [editedDescriptions, setEditedDescriptions] = useState<Record<string, string>>({});
+  const [editMode, setEditMode] = useState<EditMode>("raw");
+  const [templateFormValues, setTemplateFormValues] = useState<Record<string, string>>({});
   const [savingProductNo, setSavingProductNo] = useState<string | null>(null);
   const [saveError, setSaveError] = useState<string | null>(null);
 
   const previewWindowRef = useRef<Window | null>(null);
   const [previewWindowProductNo, setPreviewWindowProductNo] = useState<string | null>(null);
   const previewProductNoRef = useRef<string | null>(null);
+  const previewHtmlRef = useRef<string>("");
 
   const loadProducts = async (searchKeyword?: string) => {
     if (!mallId.trim()) return;
@@ -136,6 +146,8 @@ function DashboardContent() {
       setSelectedProductDetail(item);
       setSelectedProductNo(productNo);
       setEditedDescriptions((prev) => ({ ...prev, [productNo]: desc }));
+      setEditMode("raw");
+      setTemplateFormValues({});
     } catch (e) {
       setError(e instanceof Error ? e.message : "상품 상세 조회 실패");
     } finally {
@@ -148,11 +160,21 @@ function DashboardContent() {
     setSelectedProductDetail(null);
   };
 
+  const getDescriptionToSave = (productNo: string): string => {
+    if (editMode === "raw") {
+      return (
+        editedDescriptions[productNo] ??
+        selectedProductDetail?.description ??
+        ""
+      );
+    }
+    const template = getDescriptionTemplateById(editMode);
+    if (!template) return editedDescriptions[productNo] ?? "";
+    return fillTemplate(template.html, templateFormValues);
+  };
+
   const saveDescription = async (productNo: string) => {
-    const description =
-      editedDescriptions[productNo] ??
-      selectedProductDetail?.description ??
-      "";
+    const description = getDescriptionToSave(productNo);
     setSaveError(null);
     setSavingProductNo(productNo);
     try {
@@ -177,13 +199,15 @@ function DashboardContent() {
     }
   };
 
-  const sendPreviewToWindow = (productNo: string) => {
+  const sendPreviewToWindow = (productNo: string, htmlOverride?: string) => {
     const win = previewWindowRef.current;
     if (!win || win.closed) return;
     const html =
-      editedDescriptions[productNo] ??
-      (selectedProductNo === productNo ? selectedProductDetail?.description : undefined) ??
-      "";
+      htmlOverride ??
+      (previewHtmlRef.current ||
+        editedDescriptions[productNo] ??
+        (selectedProductNo === productNo ? selectedProductDetail?.description : undefined) ??
+        "");
     win.postMessage(
       { type: PREVIEW_MESSAGE_TYPE, html: buildPreviewDocument(html) },
       window.location.origin
@@ -256,6 +280,13 @@ function DashboardContent() {
     : "";
   const isSaving = p ? savingProductNo === p.productNo : false;
 
+  const selectedTemplate = editMode !== "raw" ? getDescriptionTemplateById(editMode) : null;
+  const previewHtml =
+    p && selectedTemplate
+      ? fillTemplate(selectedTemplate.html, templateFormValues)
+      : currentText;
+  if (p) previewHtmlRef.current = previewHtml;
+
   return (
     <div className={styles.root}>
       <header className={styles.header}>
@@ -298,21 +329,89 @@ function DashboardContent() {
                 </button>
               </div>
 
+              <div className={styles.templatePickerWrap}>
+                <span className={styles.templatePickerLabel}>작성 방식</span>
+                <div className={styles.templatePickerBtns}>
+                  {descriptionTemplates.map((t) => (
+                    <button
+                      key={t.id}
+                      type="button"
+                      onClick={() => setEditMode(t.id)}
+                      className={editMode === t.id ? styles.templateBtnActive : styles.templateBtn}
+                    >
+                      {t.id}
+                    </button>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={() => setEditMode("raw")}
+                    className={editMode === "raw" ? styles.templateBtnActive : styles.templateBtn}
+                  >
+                    HTML 직접 편집
+                  </button>
+                </div>
+              </div>
+
               <div className={styles.detailBody}>
                 <div className={styles.editorBlock}>
-                  <label className={styles.label}>HTML 편집</label>
-                  <textarea
-                    value={currentText}
-                    onChange={(e) =>
-                      setEditedDescriptions((prev) => ({
-                        ...prev,
-                        [p.productNo]: e.target.value,
-                      }))
-                    }
-                    className={styles.textarea}
-                    placeholder="상품 상세 설명 HTML을 입력하세요"
-                    spellCheck={false}
-                  />
+                  {editMode === "raw" ? (
+                    <>
+                      <label className={styles.label}>HTML 편집</label>
+                      <textarea
+                        value={currentText}
+                        onChange={(e) =>
+                          setEditedDescriptions((prev) => ({
+                            ...prev,
+                            [p.productNo]: e.target.value,
+                          }))
+                        }
+                        className={styles.textarea}
+                        placeholder="상품 상세 설명 HTML을 입력하세요"
+                        spellCheck={false}
+                      />
+                    </>
+                  ) : selectedTemplate ? (
+                    <>
+                      <label className={styles.label}>
+                        템플릿 {selectedTemplate.id} – {selectedTemplate.name}
+                      </label>
+                      <p className={styles.templateDesc}>{selectedTemplate.description}</p>
+                      <div className={styles.templateForm}>
+                        {selectedTemplate.fields.map((field) => (
+                          <div key={field.key} className={styles.templateField}>
+                            <label className={styles.templateFieldLabel}>{field.label}</label>
+                            {field.type === "textarea" ? (
+                              <textarea
+                                value={templateFormValues[field.key] ?? ""}
+                                onChange={(e) =>
+                                  setTemplateFormValues((prev) => ({
+                                    ...prev,
+                                    [field.key]: e.target.value,
+                                  }))
+                                }
+                                className={styles.templateTextarea}
+                                placeholder={field.placeholder}
+                                rows={4}
+                              />
+                            ) : (
+                              <input
+                                type={field.type === "url" ? "url" : "text"}
+                                value={templateFormValues[field.key] ?? ""}
+                                onChange={(e) =>
+                                  setTemplateFormValues((prev) => ({
+                                    ...prev,
+                                    [field.key]: e.target.value,
+                                  }))
+                                }
+                                className={styles.templateInput}
+                                placeholder={field.placeholder}
+                              />
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </>
+                  ) : null}
                 </div>
                 <div className={styles.previewBlock}>
                   <div className={styles.previewHeader}>
@@ -327,9 +426,9 @@ function DashboardContent() {
                   </div>
                   <div className={styles.previewFrameWrap}>
                     <iframe
-                      key={`preview-${p.productNo}-${currentText}`}
+                      key={`preview-${p.productNo}-${previewHtml}`}
                       title="description 미리보기"
-                      srcDoc={buildPreviewDocument(currentText)}
+                      srcDoc={buildPreviewDocument(previewHtml)}
                       className={styles.previewIframe}
                       sandbox="allow-same-origin allow-scripts"
                     />
