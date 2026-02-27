@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getValidAccessToken } from "@/lib/api/cafe24Api";
+import { getValidAccessToken, refreshAccessToken } from "@/lib/api/cafe24Api";
 import { logger } from "@/lib/utils/logger";
 import { config } from "@/lib/config/env";
 
@@ -44,7 +44,7 @@ export async function POST(req: NextRequest) {
     };
 
     const url = `https://${mallId}.${config.cafe24.baseUrl}/api/v2/admin/products/images`;
-    const res = await fetch(url, {
+    let res = await fetch(url, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -53,6 +53,21 @@ export async function POST(req: NextRequest) {
       },
       body: JSON.stringify(payload),
     });
+
+    if (res.status === 401) {
+      const newToken = await refreshAccessToken(mallId);
+      if (newToken) {
+        res = await fetch(url, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${newToken}`,
+            "Content-Type": "application/json",
+            "X-Cafe24-Api-Version": config.cafe24.apiVersion,
+          },
+          body: JSON.stringify(payload),
+        });
+      }
+    }
 
     const data = await res.json();
 

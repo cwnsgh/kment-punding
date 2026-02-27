@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getValidAccessToken } from "@/lib/api/cafe24Api";
+import { getValidAccessToken, refreshAccessToken } from "@/lib/api/cafe24Api";
 import { logger } from "@/lib/utils/logger";
 import { config } from "@/lib/config/env";
 
@@ -52,7 +52,7 @@ export async function GET(req: NextRequest) {
     if (productName) url.searchParams.set("product_name", productName);
     if (productNo) url.searchParams.set("product_no", productNo);
 
-    const cafe24Response = await fetch(url.toString(), {
+    let cafe24Response = await fetch(url.toString(), {
       method: "GET",
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -60,6 +60,20 @@ export async function GET(req: NextRequest) {
         "X-Cafe24-Api-Version": config.cafe24.apiVersion,
       },
     });
+
+    if (cafe24Response.status === 401) {
+      const newToken = await refreshAccessToken(mallId);
+      if (newToken) {
+        cafe24Response = await fetch(url.toString(), {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${newToken}`,
+            "Content-Type": "application/json",
+            "X-Cafe24-Api-Version": config.cafe24.apiVersion,
+          },
+        });
+      }
+    }
 
     if (!cafe24Response.ok) {
       const errorText = await cafe24Response.text();

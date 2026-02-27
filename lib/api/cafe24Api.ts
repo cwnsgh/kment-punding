@@ -87,7 +87,28 @@ export async function callCafe24Api<T = any>(
       requestOptions.body = JSON.stringify(body);
     }
 
-    const response = await fetch(url, requestOptions);
+    let response = await fetch(url, requestOptions);
+
+    // 401이면 토큰 갱신 후 한 번만 재시도
+    if (response.status === 401 && accessToken && mallId) {
+      const newToken = await refreshAccessToken(mallId);
+      if (newToken) {
+        const retryHeaders = {
+          ...createCafe24ApiHeaders(newToken),
+          ...headers,
+        };
+        const retryRes = await fetch(url, {
+          ...requestOptions,
+          headers: retryHeaders,
+        });
+        if (retryRes.ok) {
+          const data = await retryRes.json();
+          logger.info("카페24 API 401 후 갱신·재시도 성공", { mallId, endpoint });
+          return { success: true, data };
+        }
+        response = retryRes;
+      }
+    }
 
     if (!response.ok) {
       const errorText = await response.text();
@@ -156,6 +177,14 @@ export async function refreshAccessToken(mallId: string): Promise<string | null>
       `${config.cafe24.clientId}:${config.cafe24.clientSecret}`
     );
 
+    const bodyParams: Record<string, string> = {
+      grant_type: "refresh_token",
+      refresh_token: shop.refresh_token,
+    };
+    if (config.cafe24.redirectUri) {
+      bodyParams.redirect_uri = config.cafe24.redirectUri;
+    }
+
     const tokenRes = await fetch(
       `https://${mallId}.${config.cafe24.baseUrl}/api/v2/oauth/token`,
       {
@@ -164,10 +193,7 @@ export async function refreshAccessToken(mallId: string): Promise<string | null>
           "Content-Type": "application/x-www-form-urlencoded",
           Authorization: `Basic ${credentials}`,
         },
-        body: new URLSearchParams({
-          grant_type: "refresh_token",
-          refresh_token: shop.refresh_token,
-        }),
+        body: new URLSearchParams(bodyParams),
       }
     );
 
@@ -176,8 +202,10 @@ export async function refreshAccessToken(mallId: string): Promise<string | null>
     if (!token.access_token) {
       logger.error("토큰 갱신 실패", {
         mallId,
+        status: tokenRes.status,
         error: token.error,
         error_description: token.error_description,
+        fullResponse: token,
       });
       return null;
     }
