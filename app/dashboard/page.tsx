@@ -7,6 +7,7 @@ import {
   descriptionTemplates,
   getDescriptionTemplateById,
   fillTemplate,
+  parseDescriptionToValues,
 } from "@/lib/dashboard/descriptionTemplates";
 
 type EditMode = "A" | "B" | "C" | "raw";
@@ -180,8 +181,15 @@ function DashboardContent() {
       setSelectedProductDetail(item);
       setSelectedProductNo(productNo);
       setEditedDescriptions((prev) => ({ ...prev, [productNo]: desc }));
-      setEditMode("raw");
-      setTemplateFormValues({});
+
+      const parsed = parseDescriptionToValues(desc);
+      if (parsed.templateId) {
+        setEditMode(parsed.templateId);
+        setTemplateFormValues(parsed.values);
+      } else {
+        setEditMode("raw");
+        setTemplateFormValues({});
+      }
     } catch (e) {
       setError(e instanceof Error ? e.message : "상품 상세 조회 실패");
     } finally {
@@ -204,7 +212,8 @@ function DashboardContent() {
     }
     const template = getDescriptionTemplateById(editMode);
     if (!template) return editedDescriptions[productNo] ?? "";
-    return fillTemplate(template.html, templateFormValues);
+    const body = fillTemplate(template.html, templateFormValues);
+    return `<!-- kment-tpl:${editMode} -->\n${body}`;
   };
 
   const saveDescription = async (productNo: string) => {

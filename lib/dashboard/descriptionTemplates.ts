@@ -370,3 +370,80 @@ export const descriptionTemplates = TEMPLATES;
 export function getDescriptionTemplateById(id: "A" | "B" | "C"): DescriptionTemplate | undefined {
   return TEMPLATES.find((t) => t.id === id);
 }
+
+export type ParsedDescription = {
+  templateId: "A" | "B" | "C" | null;
+  values: Record<string, string>;
+};
+
+/**
+ * 저장된 description HTML에서 템플릿 ID와 필드값 역추출.
+ * 브라우저에서만 DOMParser 사용. 서버에서는 마커만 보고 templateId 추정, values는 빈 객체.
+ */
+export function parseDescriptionToValues(html: string): ParsedDescription {
+  if (!html || typeof html !== "string") return { templateId: null, values: {} };
+
+  const trimmed = html.trim();
+  let templateId: "A" | "B" | "C" | null = null;
+
+  const markerMatch = trimmed.match(/<!--\s*kment-tpl:(A|B|C)\s*-->/);
+  if (markerMatch) templateId = markerMatch[1] as "A" | "B" | "C";
+  else if (trimmed.includes("pd-theme-a")) templateId = "A";
+  else if (trimmed.includes("pd-theme-b")) templateId = "B";
+  else if (trimmed.includes("pd-theme-c")) templateId = "C";
+
+  const values: Record<string, string> = {};
+  if (!templateId) return { templateId: null, values: {} };
+
+  if (typeof DOMParser === "undefined") return { templateId, values };
+
+  try {
+    const doc = new DOMParser().parseFromString(html, "text/html");
+
+    const sec1Img = doc.querySelector(".pd-sec1-img img");
+    const sec1Text = doc.querySelector(".pd-sec1-text");
+    const sec2Text = doc.querySelector(".pd-sec2-text");
+    const sec2Img = doc.querySelector(".pd-sec2-img img");
+    const sec4Iframe = doc.querySelector(".pd-video-wrap iframe");
+
+    values.sec1_imageUrl = (sec1Img?.getAttribute("src") ?? "").trim();
+    values.sec1_text = (sec1Text?.textContent ?? "").trim();
+    values.sec2_text = (sec2Text?.textContent ?? "").trim();
+    values.sec2_imageUrl = (sec2Img?.getAttribute("src") ?? "").trim();
+
+    const accordionItems = doc.querySelectorAll(".pd-accordion-item");
+    const sec3Lines: string[] = [];
+    accordionItems.forEach((item) => {
+      const head = item.querySelector(".pd-accordion-head");
+      const bodyInner = item.querySelector(".pd-accordion-body-inner");
+      const title = (head?.textContent ?? "").trim();
+      const body = (bodyInner?.textContent ?? "").trim().replace(/\r?\n/g, "\n");
+      sec3Lines.push(`${title}::${body}`);
+    });
+    values.sec3_items = sec3Lines.join("\n");
+
+    const iframeSrc = (sec4Iframe?.getAttribute("src") ?? "").trim();
+    if (iframeSrc) {
+      const yt = iframeSrc.match(/youtube\.com\/embed\/([a-zA-Z0-9_-]+)/);
+      const vimeo = iframeSrc.match(/(?:player\.)?vimeo\.com\/video\/(\d+)/);
+      if (yt) values.sec4_videoUrl = `https://www.youtube.com/watch?v=${yt[1]}`;
+      else if (vimeo) values.sec4_videoUrl = `https://vimeo.com/video/${vimeo[1]}`;
+      else values.sec4_videoUrl = iframeSrc;
+    } else {
+      values.sec4_videoUrl = "";
+    }
+
+    const qaItems = doc.querySelectorAll(".pd-qa-item");
+    const sec5Lines: string[] = [];
+    qaItems.forEach((item) => {
+      const q = item.querySelector(".pd-qa-q");
+      const a = item.querySelector(".pd-qa-a");
+      sec5Lines.push(`${(q?.textContent ?? "").trim()}::${(a?.textContent ?? "").trim()}`);
+    });
+    values.sec5_qa = sec5Lines.join("\n");
+  } catch {
+    return { templateId, values };
+  }
+
+  return { templateId, values };
+}
