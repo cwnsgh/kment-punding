@@ -503,6 +503,13 @@
   justify-content: space-between;
 }
 
+.previewHeaderBtns {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
 .previewLink {
   font-size: 0.875rem;
   color: #059669;

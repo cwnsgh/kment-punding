@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect, Suspense, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
+import html2canvas from "html2canvas";
 import styles from "./dashboard.module.css";
 import {
   descriptionTemplates,
@@ -73,6 +74,7 @@ function DashboardContent() {
   const [saveError, setSaveError] = useState<string | null>(null);
   const [uploadingImageField, setUploadingImageField] = useState<string | null>(null);
   const [uploadError, setUploadError] = useState<string | null>(null);
+  const [capturingImage, setCapturingImage] = useState(false);
 
   const previewWindowRef = useRef<Window | null>(null);
   const [previewWindowProductNo, setPreviewWindowProductNo] = useState<string | null>(null);
@@ -339,6 +341,71 @@ function DashboardContent() {
     }
   };
 
+  const downloadPreviewAsImage = async (
+    format: "png" | "jpeg",
+    html: string,
+    productName: string
+  ) => {
+    if (!html?.trim()) return;
+    setCapturingImage(true);
+    const iframe = document.createElement("iframe");
+    iframe.setAttribute("style", "position:fixed;left:-9999px;width:720px;height:900px;border:none;");
+    document.body.appendChild(iframe);
+    const doc = iframe.contentDocument;
+    if (!doc) {
+      document.body.removeChild(iframe);
+      setCapturingImage(false);
+      return;
+    }
+    doc.open();
+    doc.write(buildPreviewDocument(html));
+    doc.close();
+
+    window.setTimeout(() => {
+      const body = iframe.contentDocument?.body;
+      if (!body) {
+        document.body.removeChild(iframe);
+        setCapturingImage(false);
+        return;
+      }
+      html2canvas(body, {
+        scale: 2,
+        useCORS: true,
+        allowTaint: true,
+        backgroundColor: "#ffffff",
+        width: body.scrollWidth,
+        height: body.scrollHeight,
+      })
+        .then((canvas) => {
+          const mime = format === "jpeg" ? "image/jpeg" : "image/png";
+          const ext = format === "jpeg" ? "jpg" : "png";
+          canvas.toBlob(
+            (blob) => {
+              if (!blob) {
+                document.body.removeChild(iframe);
+                setCapturingImage(false);
+                return;
+              }
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement("a");
+              a.href = url;
+              a.download = `상세-${productName.replace(/[/\\?*:|"]/g, "_").slice(0, 40)}.${ext}`;
+              a.click();
+              URL.revokeObjectURL(url);
+              document.body.removeChild(iframe);
+              setCapturingImage(false);
+            },
+            mime,
+            format === "jpeg" ? 0.92 : undefined
+          );
+        })
+        .catch(() => {
+          document.body.removeChild(iframe);
+          setCapturingImage(false);
+        });
+    }, 600);
+  };
+
   if (!mallId) {
     return (
       <div className={styles.noMallWrap}>
@@ -568,13 +635,31 @@ function DashboardContent() {
                 <div className={styles.previewBlock}>
                   <div className={styles.previewHeader}>
                     <label className={styles.label}>미리보기</label>
-                    <button
-                      type="button"
-                      onClick={() => openPreviewInNewWindow(p.productNo)}
-                      className={styles.previewLink}
-                    >
-                      새 창에서 보기
-                    </button>
+                    <div className={styles.previewHeaderBtns}>
+                      <button
+                        type="button"
+                        onClick={() => openPreviewInNewWindow(p.productNo)}
+                        className={styles.previewLink}
+                      >
+                        새 창에서 보기
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => downloadPreviewAsImage("png", previewHtml, p.productName)}
+                        disabled={capturingImage}
+                        className={styles.previewLink}
+                      >
+                        {capturingImage ? "변환 중…" : "PNG로 저장"}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => downloadPreviewAsImage("jpeg", previewHtml, p.productName)}
+                        disabled={capturingImage}
+                        className={styles.previewLink}
+                      >
+                        {capturingImage ? "변환 중…" : "JPEG로 저장"}
+                      </button>
+                    </div>
                   </div>
                   <div className={styles.previewFrameWrap}>
                     <iframe
