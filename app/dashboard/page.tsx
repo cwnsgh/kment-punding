@@ -344,7 +344,8 @@ function DashboardContent() {
   const downloadPreviewAsImage = async (
     format: "png" | "jpeg",
     html: string,
-    productName: string
+    productName: string,
+    expanded: boolean = false
   ) => {
     if (!html?.trim()) return;
     setCapturingImage(true);
@@ -386,49 +387,68 @@ function DashboardContent() {
     doc.write(buildPreviewDocument(htmlForCapture));
     doc.close();
 
+    const delay = expanded ? 800 : 600;
     window.setTimeout(() => {
-      const body = iframe.contentDocument?.body;
+      const docEl = iframe.contentDocument;
+      const body = docEl?.body;
       if (!body) {
         document.body.removeChild(iframe);
         setCapturingImage(false);
         return;
       }
-      html2canvas(body, {
-        scale: 2,
-        useCORS: true,
-        allowTaint: true,
-        backgroundColor: "#ffffff",
-        width: body.scrollWidth,
-        height: body.scrollHeight,
-      })
-        .then((canvas) => {
-          const mime = format === "jpeg" ? "image/jpeg" : "image/png";
-          const ext = format === "jpeg" ? "jpg" : "png";
-          canvas.toBlob(
-            (blob) => {
-              if (!blob) {
+      if (expanded && docEl) {
+        docEl.querySelectorAll(".pd-accordion-item").forEach((item) => {
+          const panel = item.querySelector(".pd-accordion-body") as HTMLElement | null;
+          if (panel) {
+            panel.style.maxHeight = "none";
+            item.setAttribute("data-open", "");
+          }
+        });
+      }
+      const doCapture = () => {
+        html2canvas(body, {
+          scale: 2,
+          useCORS: true,
+          allowTaint: true,
+          backgroundColor: "#ffffff",
+          width: body.scrollWidth,
+          height: body.scrollHeight,
+        })
+          .then((canvas) => {
+            const mime = format === "jpeg" ? "image/jpeg" : "image/png";
+            const ext = format === "jpeg" ? "jpg" : "png";
+            const nameSuffix = expanded ? "-펼침" : "";
+            canvas.toBlob(
+              (blob) => {
+                if (!blob) {
+                  document.body.removeChild(iframe);
+                  setCapturingImage(false);
+                  return;
+                }
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = `상세-${productName.replace(/[/\\?*:|"]/g, "_").slice(0, 40)}${nameSuffix}.${ext}`;
+                a.click();
+                URL.revokeObjectURL(url);
                 document.body.removeChild(iframe);
                 setCapturingImage(false);
-                return;
-              }
-              const url = URL.createObjectURL(blob);
-              const a = document.createElement("a");
-              a.href = url;
-              a.download = `상세-${productName.replace(/[/\\?*:|"]/g, "_").slice(0, 40)}.${ext}`;
-              a.click();
-              URL.revokeObjectURL(url);
-              document.body.removeChild(iframe);
-              setCapturingImage(false);
-            },
-            mime,
-            format === "jpeg" ? 0.92 : undefined
-          );
-        })
-        .catch(() => {
-          document.body.removeChild(iframe);
-          setCapturingImage(false);
-        });
-    }, 600);
+              },
+              mime,
+              format === "jpeg" ? 0.92 : undefined
+            );
+          })
+          .catch(() => {
+            document.body.removeChild(iframe);
+            setCapturingImage(false);
+          });
+      };
+      if (expanded) {
+        window.setTimeout(doCapture, 150);
+      } else {
+        doCapture();
+      }
+    }, delay);
   };
 
   if (!mallId) {
@@ -683,6 +703,26 @@ function DashboardContent() {
                         className={styles.previewLink}
                       >
                         {capturingImage ? "변환 중…" : "JPEG로 저장"}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          downloadPreviewAsImage("png", previewHtml, p.productName, true)
+                        }
+                        disabled={capturingImage}
+                        className={styles.previewLink}
+                      >
+                        {capturingImage ? "변환 중…" : "PNG로 저장 (펼침)"}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          downloadPreviewAsImage("jpeg", previewHtml, p.productName, true)
+                        }
+                        disabled={capturingImage}
+                        className={styles.previewLink}
+                      >
+                        {capturingImage ? "변환 중…" : "JPEG로 저장 (펼침)"}
                       </button>
                     </div>
                   </div>
