@@ -14,14 +14,14 @@ export type TemplateField = {
 };
 
 export type DescriptionTemplate = {
-  id: "A" | "B" | "C";
+  id: "A" | "B" | "C" | "D";
   name: string;
   description: string;
   fields: TemplateField[];
   html: string;
 };
 
-type ThemeId = "A" | "B" | "C";
+type ThemeId = "A" | "B" | "C" | "D";
 
 /** 공통 필드: 5개 섹션에 필요한 입력값 */
 const COMMON_FIELDS: TemplateField[] = [
@@ -543,6 +543,226 @@ function getThemeStylesC(): string {
 `;
 }
 
+/** 템플릿 D 전용: 이쁜 꾸민 버전 (동일 플레이스홀더·클래스명 유지) */
+function getSectionsHtmlD(): string {
+  return `
+<section class="pd-sec pd-sec1 pd-sec1-d" data-reveal>
+  <div class="pd-sec1-d-hero">
+    <div class="pd-sec1-img"><img src="{{sec1_imageUrl}}" alt="" onerror="this.style.display='none'"/></div>
+  </div>
+  <div class="pd-sec1-d-card"><div class="pd-sec1-text">{{sec1_text}}</div></div>
+</section>
+<section class="pd-sec pd-sec2 pd-sec2-d" data-reveal>
+  <div class="pd-sec2-inner">
+    <div class="pd-sec2-d-card"><div class="pd-sec2-text">{{sec2_text}}</div></div>
+    <div class="pd-sec2-img"><img src="{{sec2_imageUrl}}" alt="" onerror="this.style.display='none'"/></div>
+  </div>
+</section>
+<section class="pd-sec pd-sec3 pd-sec3-d" data-reveal>
+  <span class="pd-sec-d-label">상세 정보</span>
+  <div class="pd-accordion">{{sec3_items}}</div>
+</section>
+<section class="pd-sec pd-sec4 pd-sec4-d" data-reveal>
+  <span class="pd-sec-d-label">동영상</span>
+  {{sec4_videoEmbed}}
+</section>
+<section class="pd-sec pd-sec5 pd-sec5-d" data-reveal>
+  <span class="pd-sec-d-label">자주 묻는 질문</span>
+  <div class="pd-qa-list">{{sec5_qa}}</div>
+</section>`;
+}
+
+/** 테마 D: 이쁘게 꾸민 – 그라데이션·로즈 악센트·둥근 카드 */
+function getThemeStylesD(): string {
+  return `
+.pd-detail.pd-theme-d {
+  font-family: 'Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 0 20px 56px;
+  color: #4a5568;
+  background: linear-gradient(180deg, #fff5f5 0%, #fff 18%, #f0fdf4 100%);
+  line-height: 1.7;
+}
+.pd-detail.pd-theme-d .pd-sec { padding: 44px 0; }
+.pd-detail.pd-theme-d .pd-sec-d-label {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #e11d48;
+  margin-bottom: 16px;
+  padding-bottom: 6px;
+  border-bottom: 2px solid #fecdd3;
+}
+.pd-detail.pd-theme-d .pd-sec1-d { padding-top: 0; }
+.pd-detail.pd-theme-d .pd-sec1-d-hero {
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 8px 30px rgba(225, 29, 72, 0.08), 0 2px 8px rgba(0,0,0,0.04);
+  margin-bottom: 28px;
+}
+.pd-detail.pd-theme-d .pd-sec1-img img {
+  width: 100%;
+  height: auto;
+  display: block;
+  background: #fdf2f8;
+}
+.pd-detail.pd-theme-d .pd-sec1-d-card {
+  background: linear-gradient(135deg, #fff 0%, #fef2f2 100%);
+  border-radius: 16px;
+  padding: 28px 26px;
+  border: 1px solid #fecdd3;
+  box-shadow: 0 2px 12px rgba(225, 29, 72, 0.06);
+}
+.pd-detail.pd-theme-d .pd-sec1-text {
+  font-family: 'Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+  white-space: pre-wrap;
+  font-size: 0.9375rem;
+  color: #5f4a5a;
+  line-height: 1.8;
+}
+.pd-detail.pd-theme-d .pd-sec2-d .pd-sec2-inner {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  flex-wrap: wrap;
+}
+.pd-detail.pd-theme-d .pd-sec2-d-card {
+  flex: 1 1 260px;
+  background: linear-gradient(135deg, #f0fdf4 0%, #fff 100%);
+  border-radius: 16px;
+  padding: 26px 24px;
+  border: 1px solid #bbf7d0;
+  box-shadow: 0 2px 12px rgba(34, 197, 94, 0.06);
+}
+.pd-detail.pd-theme-d .pd-sec2-text {
+  font-family: 'Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+  white-space: pre-wrap;
+  font-size: 0.9375rem;
+  color: #14532d;
+  line-height: 1.8;
+}
+.pd-detail.pd-theme-d .pd-sec2-img {
+  flex: 1 1 260px;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 8px 30px rgba(34, 197, 94, 0.1), 0 2px 8px rgba(0,0,0,0.04);
+}
+.pd-detail.pd-theme-d .pd-sec2-img img {
+  width: 100%;
+  height: auto;
+  display: block;
+  background: #ecfdf5;
+}
+.pd-detail.pd-theme-d .pd-accordion-item {
+  background: #fff;
+  border: 1px solid #fecdd3;
+  border-radius: 14px;
+  margin-bottom: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(225, 29, 72, 0.04);
+  transition: box-shadow 0.25s, border-color 0.25s;
+}
+.pd-detail.pd-theme-d .pd-accordion-item:hover {
+  border-color: #f9a8d4;
+  box-shadow: 0 4px 16px rgba(225, 29, 72, 0.08);
+}
+.pd-detail.pd-theme-d .pd-accordion-item[data-open] {
+  border-color: #f9a8d4;
+  box-shadow: 0 4px 16px rgba(225, 29, 72, 0.1);
+}
+.pd-detail.pd-theme-d .pd-accordion-head {
+  width: 100%;
+  padding: 18px 20px;
+  text-align: left;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #831843;
+  background: linear-gradient(180deg, #fff 0%, #fdf2f8 100%);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background 0.2s;
+}
+.pd-detail.pd-theme-d .pd-accordion-head:hover { background: #fce7f3; }
+.pd-detail.pd-theme-d .pd-accordion-head::after {
+  content: '';
+  width: 16px;
+  height: 16px;
+  border-right: 2px solid #e11d48;
+  border-bottom: 2px solid #e11d48;
+  transform: rotate(45deg);
+  flex-shrink: 0;
+  margin-left: 12px;
+  transition: transform 0.25s ease;
+}
+.pd-detail.pd-theme-d .pd-accordion-item[data-open] .pd-accordion-head::after {
+  transform: rotate(-135deg);
+}
+.pd-detail.pd-theme-d .pd-accordion-body { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
+.pd-detail.pd-theme-d .pd-accordion-body-inner {
+  padding: 0 20px 20px;
+  line-height: 1.75;
+  color: #5f4a5a;
+  font-size: 0.9375rem;
+  border-top: none;
+  background: #fff;
+}
+.pd-detail.pd-theme-d .pd-video-wrap {
+  position: relative;
+  width: 100%;
+  padding-bottom: 56.25%;
+  height: 0;
+  border-radius: 20px;
+  overflow: hidden;
+  background: #1a1a1a;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.06);
+  margin-top: 8px;
+}
+.pd-detail.pd-theme-d .pd-video-wrap iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+.pd-detail.pd-theme-d .pd-qa-item {
+  background: linear-gradient(135deg, #fff 0%, #fdf2f8 100%);
+  border: 1px solid #fecdd3;
+  border-radius: 14px;
+  padding: 20px 22px;
+  margin-bottom: 12px;
+  transition: box-shadow 0.2s, border-color 0.2s;
+}
+.pd-detail.pd-theme-d .pd-qa-item:last-child { margin-bottom: 0; }
+.pd-detail.pd-theme-d .pd-qa-item:hover {
+  border-color: #f9a8d4;
+  box-shadow: 0 4px 14px rgba(225, 29, 72, 0.08);
+}
+.pd-detail.pd-theme-d .pd-qa-q {
+  font-weight: 700;
+  color: #831843;
+  font-size: 0.9375rem;
+  margin-bottom: 10px;
+}
+.pd-detail.pd-theme-d .pd-qa-a {
+  font-size: 0.9375rem;
+  color: #5f4a5a;
+  line-height: 1.75;
+}
+.pd-detail.pd-theme-d .pd-sec[data-visible] { opacity: 1; transform: translateY(0); }
+.pd-detail.pd-theme-d .pd-sec {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+`;
+}
+
 function getThemeStyles(theme: ThemeId): string {
   switch (theme) {
     case "A":
@@ -551,6 +771,8 @@ function getThemeStyles(theme: ThemeId): string {
       return getThemeStylesB();
     case "C":
       return getThemeStylesC();
+    case "D":
+      return getThemeStylesD();
   }
 }
 
@@ -586,9 +808,16 @@ function getScript(): string {
 }
 
 function buildFullHtml(theme: ThemeId): string {
-  const themeClass = theme === "A" ? "pd-theme-a" : theme === "B" ? "pd-theme-b" : "pd-theme-c";
+  const themeClass =
+    theme === "A" ? "pd-theme-a" : theme === "B" ? "pd-theme-b" : theme === "C" ? "pd-theme-c" : "pd-theme-d";
   const sectionsHtml =
-    theme === "B" ? getSectionsHtmlB() : theme === "C" ? getSectionsHtmlC() : getSectionsHtml();
+    theme === "B"
+      ? getSectionsHtmlB()
+      : theme === "C"
+        ? getSectionsHtmlC()
+        : theme === "D"
+          ? getSectionsHtmlD()
+          : getSectionsHtml();
   return `<style>${getThemeStyles(theme)}</style><div class="pd-detail ${themeClass}">${sectionsHtml}</div><script>${getScript()}</script>`;
 }
 
@@ -619,6 +848,16 @@ function getTemplateC(): DescriptionTemplate {
     description: "좁은 단, 세리프, 블랙/화이트. 이미지·텍스트 세로 배치, 아코디언·Q&A 심플 라인.",
     fields: [...COMMON_FIELDS],
     html: buildFullHtml("C"),
+  };
+}
+
+function getTemplateD(): DescriptionTemplate {
+  return {
+    id: "D",
+    name: "템플릿 D – 이쁘게 꾸민",
+    description: "로즈·민트 그라데이션, 둥근 카드, 섹션 라벨. 상세·Q&A 카드형.",
+    fields: [...COMMON_FIELDS],
+    html: buildFullHtml("D"),
   };
 }
 
@@ -680,16 +919,19 @@ const TEMPLATES: DescriptionTemplate[] = [
   getTemplateA(),
   getTemplateB(),
   getTemplateC(),
+  getTemplateD(),
 ];
 
 export const descriptionTemplates = TEMPLATES;
 
-export function getDescriptionTemplateById(id: "A" | "B" | "C"): DescriptionTemplate | undefined {
+export function getDescriptionTemplateById(
+  id: "A" | "B" | "C" | "D"
+): DescriptionTemplate | undefined {
   return TEMPLATES.find((t) => t.id === id);
 }
 
 export type ParsedDescription = {
-  templateId: "A" | "B" | "C" | null;
+  templateId: "A" | "B" | "C" | "D" | null;
   values: Record<string, string>;
 };
 
@@ -701,13 +943,14 @@ export function parseDescriptionToValues(html: string): ParsedDescription {
   if (!html || typeof html !== "string") return { templateId: null, values: {} };
 
   const trimmed = html.trim();
-  let templateId: "A" | "B" | "C" | null = null;
+  let templateId: "A" | "B" | "C" | "D" | null = null;
 
-  const markerMatch = trimmed.match(/<!--\s*kment-tpl:(A|B|C)\s*-->/);
-  if (markerMatch) templateId = markerMatch[1] as "A" | "B" | "C";
+  const markerMatch = trimmed.match(/<!--\s*kment-tpl:(A|B|C|D)\s*-->/);
+  if (markerMatch) templateId = markerMatch[1] as "A" | "B" | "C" | "D";
   else if (trimmed.includes("pd-theme-a")) templateId = "A";
   else if (trimmed.includes("pd-theme-b")) templateId = "B";
   else if (trimmed.includes("pd-theme-c")) templateId = "C";
+  else if (trimmed.includes("pd-theme-d")) templateId = "D";
 
   const values: Record<string, string> = {};
   if (!templateId) return { templateId: null, values: {} };

@@ -11,7 +11,7 @@ import {
   parseDescriptionToValues,
 } from "@/lib/dashboard/descriptionTemplates";
 
-type EditMode = "A" | "B" | "C" | "raw";
+type EditMode = "A" | "B" | "C" | "D" | "raw";
 
 const PREVIEW_MESSAGE_TYPE = "preview-html" as const;
 
