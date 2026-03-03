@@ -348,6 +348,31 @@ function DashboardContent() {
   ) => {
     if (!html?.trim()) return;
     setCapturingImage(true);
+
+    const imgUrls = [...html.matchAll(/<img[^>]+src=["'](https:\/\/[^"']+)["']/gi)].map(
+      (m) => m[1]
+    );
+    const uniqueUrls = Array.from(new Set(imgUrls));
+    let htmlForCapture = html;
+    if (uniqueUrls.length > 0) {
+      try {
+        const res = await fetch("/api/proxy-images-for-capture", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ urls: uniqueUrls }),
+        });
+        const data = await res.json();
+        const dataUrls = data.dataUrls || {};
+        for (const [url, dataUrl] of Object.entries(dataUrls)) {
+          if (typeof dataUrl === "string") {
+            htmlForCapture = htmlForCapture.split(url).join(dataUrl);
+          }
+        }
+      } catch {
+        // 캡처는 진행, 이미지만 빠질 수 있음
+      }
+    }
+
     const iframe = document.createElement("iframe");
     iframe.setAttribute("style", "position:fixed;left:-9999px;width:720px;height:900px;border:none;");
     document.body.appendChild(iframe);
@@ -358,7 +383,7 @@ function DashboardContent() {
       return;
     }
     doc.open();
-    doc.write(buildPreviewDocument(html));
+    doc.write(buildPreviewDocument(htmlForCapture));
     doc.close();
 
     window.setTimeout(() => {
