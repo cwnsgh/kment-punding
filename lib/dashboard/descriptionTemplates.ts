@@ -194,7 +194,17 @@ function getThemeStylesA(): string {
 .pd-detail.pd-theme-a .pd-sec1-img,
 .pd-detail.pd-theme-a .pd-sec2-img { flex: 1 1 280px; }
 .pd-detail.pd-theme-a .pd-sec1-img img,
-.pd-detail.pd-theme-a .pd-sec2-img img { width: 100%; height: auto; border-radius: 8px; display: block; background: #f3f4f6; }
+.pd-detail.pd-theme-a .pd-sec2-img img {
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  max-height: 560px;
+  object-fit: contain;
+  object-position: center;
+  border-radius: 8px;
+  display: block;
+  background: #f3f4f6;
+}
 .pd-detail.pd-theme-a .pd-sec1-text,
 .pd-detail.pd-theme-a .pd-sec2-text { flex: 1 1 280px; line-height: 1.7; white-space: pre-wrap; }
 .pd-detail.pd-theme-a .pd-sec3-title,
@@ -248,7 +258,11 @@ function getThemeStylesB(): string {
 }
 .pd-detail.pd-theme-b .pd-sec1-img img {
   width: 100%;
+  max-width: 100%;
   height: auto;
+  max-height: 560px;
+  object-fit: contain;
+  object-position: center;
   display: block;
   vertical-align: middle;
   background: #f5f5f4;
@@ -292,7 +306,11 @@ function getThemeStylesB(): string {
 }
 .pd-detail.pd-theme-b .pd-sec2-img img {
   width: 100%;
+  max-width: 100%;
   height: auto;
+  max-height: 560px;
+  object-fit: contain;
+  object-position: center;
   display: block;
   background: #f5f5f4;
 }
@@ -430,7 +448,11 @@ function getThemeStylesC(): string {
 }
 .pd-detail.pd-theme-c .pd-sec1-img img {
   width: 100%;
+  max-width: 100%;
   height: auto;
+  max-height: 560px;
+  object-fit: contain;
+  object-position: center;
   display: block;
   background: #fafafa;
 }
@@ -456,7 +478,11 @@ function getThemeStylesC(): string {
 }
 .pd-detail.pd-theme-c .pd-sec2-img img {
   width: 100%;
+  max-width: 100%;
   height: auto;
+  max-height: 560px;
+  object-fit: contain;
+  object-position: center;
   display: block;
   background: #fafafa;
 }
@@ -605,7 +631,11 @@ function getThemeStylesD(): string {
 }
 .pd-detail.pd-theme-d .pd-sec1-img img {
   width: 100%;
+  max-width: 100%;
   height: auto;
+  max-height: 560px;
+  object-fit: contain;
+  object-position: center;
   display: block;
   background: #fdf2f8;
 }
@@ -652,7 +682,11 @@ function getThemeStylesD(): string {
 }
 .pd-detail.pd-theme-d .pd-sec2-img img {
   width: 100%;
+  max-width: 100%;
   height: auto;
+  max-height: 560px;
+  object-fit: contain;
+  object-position: center;
   display: block;
   background: #ecfdf5;
 }
