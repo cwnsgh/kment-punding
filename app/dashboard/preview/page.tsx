@@ -1,13 +1,16 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const MESSAGE_TYPE = "preview-html" as const;
+const HEIGHT_MESSAGE_TYPE = "iframe-content-height" as const;
 
 let lastReceivedHtml = "";
 
 export default function PreviewWindowPage() {
   const [srcdoc, setSrcdoc] = useState<string>(() => lastReceivedHtml);
+  const [iframeHeight, setIframeHeight] = useState<number>(2000);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
 
   useEffect(() => {
     if (lastReceivedHtml) setSrcdoc(lastReceivedHtml);
@@ -16,6 +19,10 @@ export default function PreviewWindowPage() {
       if (e.data?.type === MESSAGE_TYPE && typeof e.data.html === "string") {
         lastReceivedHtml = e.data.html;
         setSrcdoc(e.data.html);
+        setIframeHeight(2000);
+      }
+      if (e.data?.type === HEIGHT_MESSAGE_TYPE && typeof e.data.height === "number" && e.data.height > 0) {
+        setIframeHeight(Math.max(e.data.height + 24, 800));
       }
     };
     window.addEventListener("message", handler);
@@ -41,13 +48,14 @@ export default function PreviewWindowPage() {
   return (
     <div className="min-h-screen w-full flex flex-col bg-gray-100 relative">
       <div className="w-full max-w-[1230px] mx-auto flex-shrink-0 px-3 py-2 bg-gray-200 text-xs text-gray-600 border-b border-gray-300">
-        description 미리보기 (편집 창에서 수정하면 실시간 반영)
+        description 미리보기 · 웹 (편집 창에서 수정하면 실시간 반영)
       </div>
-      <div className="w-full max-w-[1230px] mx-auto flex-1 min-h-0 bg-white">
+      <div className="w-full max-w-[1230px] mx-auto flex-1 bg-white overflow-auto">
         <iframe
+          ref={iframeRef}
           title="미리보기"
           srcDoc={srcdoc}
-          className="w-full h-full min-h-[70vh] border-0 block bg-white"
+          style={{ width: "100%", minHeight: iframeHeight, height: iframeHeight, border: 0, display: "block" }}
           sandbox="allow-same-origin allow-scripts"
         />
       </div>

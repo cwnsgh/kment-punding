@@ -34,7 +34,10 @@ function buildPreviewDocument(html: string): string {
   bodyContent = bodyContent.trim() || "";
   if (!bodyContent) bodyContent = "<span style='color:#9ca3af'>(없음)</span>";
   const headStyles = styleBlocks.join("");
-  return `<!DOCTYPE html><html><head><meta charset="utf-8">${escapeForSrcdoc(headStyles)}</head><body style="margin:0;min-height:100%">${escapeForSrcdoc(bodyContent)}</body></html>`;
+  const heightScript = escapeForSrcdoc(
+    "<script>(function(){function sendHeight(){var h=Math.max(document.body.scrollHeight,document.body.offsetHeight,document.documentElement.scrollHeight);try{window.parent.postMessage({type:'iframe-content-height',height:h},'*');}catch(e){}}if(document.readyState==='complete')setTimeout(sendHeight,150);else window.addEventListener('load',function(){setTimeout(sendHeight,150);});setTimeout(sendHeight,500);})();</script>"
+  );
+  return `<!DOCTYPE html><html><head><meta charset="utf-8">${escapeForSrcdoc(headStyles)}</head><body style="margin:0;min-height:100%">${escapeForSrcdoc(bodyContent)}${heightScript}</body></html>`;
 }
 
 type ProductListItem = {
@@ -684,7 +687,7 @@ function DashboardContent() {
                 </div>
                 <div className={styles.previewBlock}>
                   <div className={styles.previewHeader}>
-                    <label className={styles.label}>미리보기</label>
+                    <label className={styles.label}>미리보기 (모바일)</label>
                     <div className={styles.previewHeaderBtns}>
                       <button
                         type="button"
