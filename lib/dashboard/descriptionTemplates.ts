@@ -25,22 +25,48 @@ type ThemeId = "A" | "B" | "C" | "D";
 
 /** 공통 필드: 5개 섹션에 필요한 입력값 */
 const COMMON_FIELDS: TemplateField[] = [
-  { key: "sec1_imageUrl", label: "섹션1 이미지 URL", type: "url", placeholder: "https://..." },
-  { key: "sec1_text", label: "섹션1 글자", type: "textarea", placeholder: "이미지 옆에 표시할 텍스트" },
-  { key: "sec2_text", label: "섹션2 글자", type: "textarea", placeholder: "섹션2 텍스트" },
-  { key: "sec2_imageUrl", label: "섹션2 이미지 URL", type: "url", placeholder: "https://..." },
+  {
+    key: "sec1_imageUrl",
+    label: "섹션1 이미지 URL",
+    type: "url",
+    placeholder: "https://...",
+  },
+  {
+    key: "sec1_text",
+    label: "섹션1 글자",
+    type: "textarea",
+    placeholder: "이미지 옆에 표시할 텍스트",
+  },
+  {
+    key: "sec2_text",
+    label: "섹션2 글자",
+    type: "textarea",
+    placeholder: "섹션2 텍스트",
+  },
+  {
+    key: "sec2_imageUrl",
+    label: "섹션2 이미지 URL",
+    type: "url",
+    placeholder: "https://...",
+  },
   {
     key: "sec3_items",
     label: "섹션3 드롭다운 (한 줄에 하나, 제목::내용)",
     type: "textarea",
     placeholder: "상세스펙::재질, 사이즈 등\n배송안내::배송 기간 및 방법",
   },
-  { key: "sec4_videoUrl", label: "섹션4 동영상 URL", type: "url", placeholder: "YouTube 또는 Vimeo 링크" },
+  {
+    key: "sec4_videoUrl",
+    label: "섹션4 동영상 URL",
+    type: "url",
+    placeholder: "YouTube 또는 Vimeo 링크",
+  },
   {
     key: "sec5_qa",
     label: "섹션5 Q&A (한 줄에 하나, 질문::답변)",
     type: "textarea",
-    placeholder: "교환 가능한가요?::7일 이내 미개봉 시 가능합니다\n재고 있나요?::실시간 재고는 문의 주세요",
+    placeholder:
+      "교환 가능한가요?::7일 이내 미개봉 시 가능합니다\n재고 있나요?::실시간 재고는 문의 주세요",
   },
 ];
 
@@ -55,7 +81,10 @@ function escapeHtml(s: string): string {
 /** 섹션3: "제목::내용" 한 줄씩 → 아코디언 HTML */
 export function sec3ItemsToAccordion(text: string): string {
   if (!text || !text.trim()) return "";
-  const lines = text.trim().split(/\r?\n/).filter((l) => l.trim());
+  const lines = text
+    .trim()
+    .split(/\r?\n/)
+    .filter((l) => l.trim());
   return lines
     .map((line) => {
       const sep = line.indexOf("::");
@@ -74,7 +103,9 @@ export function getVideoEmbedHtml(url: string): string {
   if (!url || !url.trim()) return "";
   const u = url.trim();
   let src = "";
-  const ytMatch = u.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]+)/);
+  const ytMatch = u.match(
+    /(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]+)/,
+  );
   const vimeoMatch = u.match(/vimeo\.com\/(?:video\/)?(\d+)/);
   if (ytMatch) src = `https://www.youtube.com/embed/${ytMatch[1]}`;
   else if (vimeoMatch) src = `https://player.vimeo.com/video/${vimeoMatch[1]}`;
@@ -85,7 +116,10 @@ export function getVideoEmbedHtml(url: string): string {
 /** 섹션5: "질문::답변" 한 줄씩 → Q&A HTML */
 export function sec5QaToHtml(text: string): string {
   if (!text || !text.trim()) return "";
-  const lines = text.trim().split(/\r?\n/).filter((l) => l.trim());
+  const lines = text
+    .trim()
+    .split(/\r?\n/)
+    .filter((l) => l.trim());
   return lines
     .map((line) => {
       const sep = line.indexOf("::");
@@ -186,7 +220,7 @@ function getSectionsHtmlC(): string {
 function getThemeStylesA(): string {
   return `
 .pd-detail-wrap { width: 100%; max-width: 1230px; margin: 0 auto; }
-.pd-detail.pd-theme-a { font-family: 'Malgun Gothic', sans-serif; width: 100%; margin: 0; padding: 24px 16px; color: #374151; }
+.pd-detail.pd-theme-a { font-family: 'Malgun Gothic', sans-serif; width: 100%; margin: 0; padding: 0; color: #374151; }
 .pd-detail.pd-theme-a .pd-sec { padding: 32px 0; border-bottom: 1px solid #e5e7eb; }
 .pd-detail.pd-theme-a .pd-sec:last-child { border-bottom: none; }
 .pd-detail.pd-theme-a .pd-sec1-inner,
@@ -235,7 +269,7 @@ function getThemeStylesB(): string {
   font-family: 'Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
   width: 100%;
   margin: 0;
-  padding: 0 20px 48px;
+  padding: 0;
   color: #374151;
   background: linear-gradient(180deg, #fafaf9 0%, #ffffff 12%);
   line-height: 1.65;
@@ -424,9 +458,9 @@ function getThemeStylesC(): string {
   return `
 .pd-detail.pd-theme-c {
   font-family: Georgia, 'Times New Roman', 'Malgun Gothic', serif;
-  max-width: 560px;
-  margin: 0 auto;
-  padding: 0 24px 56px;
+  width: 100%;
+  margin: 0;
+  padding: 0;
   color: #171717;
   background: #fff;
   line-height: 1.7;
@@ -605,7 +639,7 @@ function getThemeStylesD(): string {
   font-family: 'Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
   width: 100%;
   margin: 0;
-  padding: 0 20px 56px;
+  padding: 0;
   color: #4a5568;
   background: linear-gradient(180deg, #fff5f5 0%, #fff 18%, #f0fdf4 100%);
   line-height: 1.7;
@@ -840,7 +874,13 @@ function getScript(): string {
 
 function buildFullHtml(theme: ThemeId): string {
   const themeClass =
-    theme === "A" ? "pd-theme-a" : theme === "B" ? "pd-theme-b" : theme === "C" ? "pd-theme-c" : "pd-theme-d";
+    theme === "A"
+      ? "pd-theme-a"
+      : theme === "B"
+        ? "pd-theme-b"
+        : theme === "C"
+          ? "pd-theme-c"
+          : "pd-theme-d";
   const sectionsHtml =
     theme === "B"
       ? getSectionsHtmlB()
@@ -856,7 +896,8 @@ function getTemplateA(): DescriptionTemplate {
   return {
     id: "A",
     name: "템플릿 A – 심플 라이트",
-    description: "밝고 깔끔한 그레이 톤, 5개 섹션(이미지+글, 글+이미지, 드롭다운, 동영상, Q&A)",
+    description:
+      "밝고 깔끔한 그레이 톤, 5개 섹션(이미지+글, 글+이미지, 드롭다운, 동영상, Q&A)",
     fields: [...COMMON_FIELDS],
     html: buildFullHtml("A"),
   };
@@ -866,7 +907,8 @@ function getTemplateB(): DescriptionTemplate {
   return {
     id: "B",
     name: "템플릿 B – 프리미엄 상세",
-    description: "여백·카드·타이포가 정돈된 상세 페이지. 히어로 이미지, 세로 악센트, 아코디언·Q&A 카드형.",
+    description:
+      "여백·카드·타이포가 정돈된 상세 페이지. 히어로 이미지, 세로 악센트, 아코디언·Q&A 카드형.",
     fields: [...COMMON_FIELDS],
     html: buildFullHtml("B"),
   };
@@ -876,7 +918,8 @@ function getTemplateC(): DescriptionTemplate {
   return {
     id: "C",
     name: "템플릿 C – 미니멀 에디토리얼",
-    description: "좁은 단, 세리프, 블랙/화이트. 이미지·텍스트 세로 배치, 아코디언·Q&A 심플 라인.",
+    description:
+      "좁은 단, 세리프, 블랙/화이트. 이미지·텍스트 세로 배치, 아코디언·Q&A 심플 라인.",
     fields: [...COMMON_FIELDS],
     html: buildFullHtml("C"),
   };
@@ -895,7 +938,10 @@ function getTemplateD(): DescriptionTemplate {
 /** 스펙 텍스트 → 테이블 행 (기존 호환용, 현재 템플릿에서는 미사용) */
 export function specsTextToTableRows(specsText: string): string {
   if (!specsText || !specsText.trim()) return "";
-  const rows = specsText.trim().split(/\r?\n/).filter((line) => line.trim());
+  const rows = specsText
+    .trim()
+    .split(/\r?\n/)
+    .filter((line) => line.trim());
   return rows
     .map((line) => {
       const colon = line.indexOf(":");
@@ -913,12 +959,14 @@ export function specsTextToTableRows(specsText: string): string {
 export function fillTemplate(
   html: string,
   values: Record<string, string>,
-  options?: { specsToTable?: (specsText: string) => string }
+  options?: { specsToTable?: (specsText: string) => string },
 ): string {
   let out = html;
 
-  const sec3 = values.sec3_items != null ? sec3ItemsToAccordion(values.sec3_items) : "";
-  const sec4Embed = values.sec4_videoUrl != null ? getVideoEmbedHtml(values.sec4_videoUrl) : "";
+  const sec3 =
+    values.sec3_items != null ? sec3ItemsToAccordion(values.sec3_items) : "";
+  const sec4Embed =
+    values.sec4_videoUrl != null ? getVideoEmbedHtml(values.sec4_videoUrl) : "";
   const sec5 = values.sec5_qa != null ? sec5QaToHtml(values.sec5_qa) : "";
 
   const replacements: Array<{ place: string; value: string }> = [
@@ -935,7 +983,10 @@ export function fillTemplate(
     const place = `{{${key}}}`;
     if (!out.includes(place)) continue;
     if (key === "specs" && options?.specsToTable) {
-      out = out.replace(new RegExp(place.replace(/[{}]/g, "\\$&"), "g"), options.specsToTable(value));
+      out = out.replace(
+        new RegExp(place.replace(/[{}]/g, "\\$&"), "g"),
+        options.specsToTable(value),
+      );
       continue;
     }
     if (["sec3_items", "sec4_videoUrl", "sec5_qa"].includes(key)) continue;
@@ -956,7 +1007,7 @@ const TEMPLATES: DescriptionTemplate[] = [
 export const descriptionTemplates = TEMPLATES;
 
 export function getDescriptionTemplateById(
-  id: "A" | "B" | "C" | "D"
+  id: "A" | "B" | "C" | "D",
 ): DescriptionTemplate | undefined {
   return TEMPLATES.find((t) => t.id === id);
 }
@@ -971,7 +1022,8 @@ export type ParsedDescription = {
  * 브라우저에서만 DOMParser 사용. 서버에서는 마커만 보고 templateId 추정, values는 빈 객체.
  */
 export function parseDescriptionToValues(html: string): ParsedDescription {
-  if (!html || typeof html !== "string") return { templateId: null, values: {} };
+  if (!html || typeof html !== "string")
+    return { templateId: null, values: {} };
 
   const trimmed = html.trim();
   let templateId: "A" | "B" | "C" | "D" | null = null;
@@ -1008,7 +1060,9 @@ export function parseDescriptionToValues(html: string): ParsedDescription {
       const head = item.querySelector(".pd-accordion-head");
       const bodyInner = item.querySelector(".pd-accordion-body-inner");
       const title = (head?.textContent ?? "").trim();
-      const body = (bodyInner?.textContent ?? "").trim().replace(/\r?\n/g, "\n");
+      const body = (bodyInner?.textContent ?? "")
+        .trim()
+        .replace(/\r?\n/g, "\n");
       sec3Lines.push(`${title}::${body}`);
     });
     values.sec3_items = sec3Lines.join("\n");
@@ -1018,7 +1072,8 @@ export function parseDescriptionToValues(html: string): ParsedDescription {
       const yt = iframeSrc.match(/youtube\.com\/embed\/([a-zA-Z0-9_-]+)/);
       const vimeo = iframeSrc.match(/(?:player\.)?vimeo\.com\/video\/(\d+)/);
       if (yt) values.sec4_videoUrl = `https://www.youtube.com/watch?v=${yt[1]}`;
-      else if (vimeo) values.sec4_videoUrl = `https://vimeo.com/video/${vimeo[1]}`;
+      else if (vimeo)
+        values.sec4_videoUrl = `https://vimeo.com/video/${vimeo[1]}`;
       else values.sec4_videoUrl = iframeSrc;
     } else {
       values.sec4_videoUrl = "";
@@ -1029,7 +1084,9 @@ export function parseDescriptionToValues(html: string): ParsedDescription {
     qaItems.forEach((item) => {
       const q = item.querySelector(".pd-qa-q");
       const a = item.querySelector(".pd-qa-a");
-      sec5Lines.push(`${(q?.textContent ?? "").trim()}::${(a?.textContent ?? "").trim()}`);
+      sec5Lines.push(
+        `${(q?.textContent ?? "").trim()}::${(a?.textContent ?? "").trim()}`,
+      );
     });
     values.sec5_qa = sec5Lines.join("\n");
   } catch {
