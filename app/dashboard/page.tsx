@@ -15,6 +15,88 @@ type EditMode = "A" | "B" | "C" | "D" | "E" | "raw";
 
 const PREVIEW_MESSAGE_TYPE = "preview-html" as const;
 
+/** 아코디언 "제목::내용" 텍스트 ↔ { title, content }[] */
+function parseAccordionItems(text: string): { title: string; content: string }[] {
+  if (!text || !String(text).trim()) return [];
+  return String(text)
+    .trim()
+    .split(/\r?\n/)
+    .filter((line) => line.trim())
+    .map((line) => {
+      const i = line.indexOf("::");
+      const title = i >= 0 ? line.slice(0, i).trim() : line.trim();
+      const content = i >= 0 ? line.slice(i + 2).trim() : "";
+      return { title, content };
+    });
+}
+function serializeAccordionItems(items: { title: string; content: string }[]): string {
+  return items.map(({ title, content }) => `${title}::${content}`).join("\n");
+}
+
+function AccordionItemsEditor({
+  value,
+  onChange,
+  fieldLabel,
+  styles: s,
+}: {
+  value: string;
+  onChange: (next: string) => void;
+  fieldLabel: string;
+  styles: { [k: string]: string };
+}) {
+  const items = parseAccordionItems(value);
+  const update = (next: { title: string; content: string }[]) => {
+    onChange(serializeAccordionItems(next));
+  };
+  const setItem = (index: number, part: "title" | "content", text: string) => {
+    const next = [...items];
+    if (!next[index]) next[index] = { title: "", content: "" };
+    next[index] = { ...next[index], [part]: text };
+    update(next);
+  };
+  const remove = (index: number) => {
+    update(items.filter((_, i) => i !== index));
+  };
+  const add = () => {
+    update([...items, { title: "", content: "" }]);
+  };
+  return (
+    <div className={s.accordionItemsWrap}>
+      {items.length === 0 ? (
+        <p className={s.imageUploadHint}>
+          아래 「항목 추가」로 제목·내용을 넣으면 아코디언으로 표시됩니다.
+        </p>
+      ) : null}
+      {items.map((item, index) => (
+        <div key={index} className={s.accordionItemRow}>
+          <div className={s.accordionItemRowHead}>
+            <input
+              type="text"
+              value={item.title}
+              onChange={(e) => setItem(index, "title", e.target.value)}
+              placeholder="제목"
+              aria-label={`${fieldLabel} ${index + 1} 제목`}
+            />
+            <button type="button" onClick={() => remove(index)} className={s.accordionItemDel}>
+              삭제
+            </button>
+          </div>
+          <textarea
+            value={item.content}
+            onChange={(e) => setItem(index, "content", e.target.value)}
+            placeholder="내용"
+            rows={2}
+            aria-label={`${fieldLabel} ${index + 1} 내용`}
+          />
+        </div>
+      ))}
+      <button type="button" onClick={add} className={s.accordionItemAdd}>
+        + 항목 추가
+      </button>
+    </div>
+  );
+}
+
 function escapeForSrcdoc(s: string): string {
   return s
     .replace(/\\/g, "\\\\")
@@ -588,7 +670,16 @@ function DashboardContent() {
                         {selectedTemplate.fields.map((field) => (
                           <div key={field.key} className={styles.templateField}>
                             <label className={styles.templateFieldLabel}>{field.label}</label>
-                            {field.type === "textarea" ? (
+                            {field.key === "sec3_items" || field.key === "sec4_items" ? (
+                              <AccordionItemsEditor
+                                value={templateFormValues[field.key] ?? ""}
+                                onChange={(next) =>
+                                  setTemplateFormValues((prev) => ({ ...prev, [field.key]: next }))
+                                }
+                                fieldLabel={field.label}
+                                styles={styles}
+                              />
+                            ) : field.type === "textarea" ? (
                               <textarea
                                 value={templateFormValues[field.key] ?? ""}
                                 onChange={(e) =>
