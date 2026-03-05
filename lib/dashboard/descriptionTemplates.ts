@@ -245,7 +245,7 @@ export function sec3ItemsToAccordion(text: string): string {
       const title = sep >= 0 ? line.slice(0, sep).trim() : line.trim();
       const body = sep >= 0 ? line.slice(sep + 2).trim() : "";
       return `<div class="pd-accordion-item" data-accordion>
-  <button type="button" class="pd-accordion-head" aria-expanded="false">${escapeHtml(title)}</button>
+  <button type="button" class="pd-accordion-head" aria-expanded="false">${escapeHtml(title)}<span class="pd-accordion-icon" aria-hidden="true"></span></button>
   <div class="pd-accordion-body"><div class="pd-accordion-body-inner">${escapeHtml(body).replace(/\n/g, "<br>")}</div></div>
 </div>`;
     })
@@ -419,8 +419,18 @@ function getThemeStylesA(): string {
   width: 100%; padding: 16px 20px; text-align: left; font-size: 0.9375rem; font-weight: 600; color: #111;
   background: transparent; border: none; cursor: pointer; display: flex; justify-content: space-between; align-items: center;
 }
-.pd-detail.pd-theme-a .pd-accordion-head::after { content: '▼'; font-size: 0.6rem; color: #9ca3af; }
-.pd-detail.pd-theme-a .pd-accordion-item[data-open] .pd-accordion-head::after { content: '▲'; }
+.pd-detail.pd-theme-a .pd-accordion-head .pd-accordion-icon {
+  display: inline-block; width: 1em; height: 1em; position: relative; flex-shrink: 0; margin-left: 10px; color: #9ca3af;
+  transition: transform 0.4s ease;
+}
+.pd-detail.pd-theme-a .pd-accordion-head .pd-accordion-icon::before {
+  content: ''; position: absolute; left: 50%; top: 50%; width: 70%; height: 2px; margin: -1px 0 0 -35%; background: currentColor; border-radius: 1px;
+}
+.pd-detail.pd-theme-a .pd-accordion-head .pd-accordion-icon::after {
+  content: ''; position: absolute; left: 50%; top: 50%; width: 2px; height: 70%; margin: -35% 0 0 -1px; background: currentColor; border-radius: 1px; transition: opacity 0.25s ease;
+}
+.pd-detail.pd-theme-a .pd-accordion-item[data-open] .pd-accordion-head .pd-accordion-icon { transform: rotate(360deg); color: #111; }
+.pd-detail.pd-theme-a .pd-accordion-item[data-open] .pd-accordion-head .pd-accordion-icon::after { opacity: 0; }
 .pd-detail.pd-theme-a .pd-accordion-body { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
 .pd-detail.pd-theme-a .pd-accordion-body-inner { padding: 0 20px 20px; line-height: 1.65; color: #4b5563; font-size: 0.9375rem; border-top: none; }
 .pd-detail.pd-theme-a .pd-video-wrap {
@@ -504,8 +514,18 @@ function getThemeStylesB(): string {
   display: flex; justify-content: space-between; align-items: center; transition: background 0.2s;
 }
 .pd-detail.pd-theme-b .pd-accordion-head:hover { background: #fcfaf9; }
-.pd-detail.pd-theme-b .pd-accordion-head::after { content: '▼'; font-size: 0.6rem; color: #9ca3af; margin-left: 10px; flex-shrink: 0; }
-.pd-detail.pd-theme-b .pd-accordion-item[data-open] .pd-accordion-head::after { content: '▲'; color: #111; }
+.pd-detail.pd-theme-b .pd-accordion-head .pd-accordion-icon {
+  display: inline-block; width: 1em; height: 1em; position: relative; flex-shrink: 0; margin-left: 10px; color: #9ca3af;
+  transition: transform 0.4s ease;
+}
+.pd-detail.pd-theme-b .pd-accordion-head .pd-accordion-icon::before {
+  content: ''; position: absolute; left: 50%; top: 50%; width: 70%; height: 2px; margin: -1px 0 0 -35%; background: currentColor; border-radius: 1px;
+}
+.pd-detail.pd-theme-b .pd-accordion-head .pd-accordion-icon::after {
+  content: ''; position: absolute; left: 50%; top: 50%; width: 2px; height: 70%; margin: -35% 0 0 -1px; background: currentColor; border-radius: 1px; transition: opacity 0.25s ease;
+}
+.pd-detail.pd-theme-b .pd-accordion-item[data-open] .pd-accordion-head .pd-accordion-icon { transform: rotate(360deg); color: #111; }
+.pd-detail.pd-theme-b .pd-accordion-item[data-open] .pd-accordion-head .pd-accordion-icon::after { opacity: 0; }
 .pd-detail.pd-theme-b .pd-accordion-body { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
 .pd-detail.pd-theme-b .pd-accordion-body-inner {
   padding: 0 20px 20px; line-height: 1.65; color: #4b5563; font-size: 0.9375rem; border-top: none;
@@ -576,8 +596,18 @@ function getThemeStylesC(): string {
   display: flex; justify-content: space-between; align-items: center; transition: color 0.2s;
 }
 .pd-detail.pd-theme-c .pd-accordion-head:hover { color: #4b5563; }
-.pd-detail.pd-theme-c .pd-accordion-head::after { content: '▼'; font-size: 0.6rem; color: #9ca3af; flex-shrink: 0; margin-left: 12px; }
-.pd-detail.pd-theme-c .pd-accordion-item[data-open] .pd-accordion-head::after { content: '▲'; }
+.pd-detail.pd-theme-c .pd-accordion-head .pd-accordion-icon {
+  display: inline-block; width: 1em; height: 1em; position: relative; flex-shrink: 0; margin-left: 12px; color: #9ca3af;
+  transition: transform 0.4s ease;
+}
+.pd-detail.pd-theme-c .pd-accordion-head .pd-accordion-icon::before {
+  content: ''; position: absolute; left: 50%; top: 50%; width: 70%; height: 2px; margin: -1px 0 0 -35%; background: currentColor; border-radius: 1px;
+}
+.pd-detail.pd-theme-c .pd-accordion-head .pd-accordion-icon::after {
+  content: ''; position: absolute; left: 50%; top: 50%; width: 2px; height: 70%; margin: -35% 0 0 -1px; background: currentColor; border-radius: 1px; transition: opacity 0.25s ease;
+}
+.pd-detail.pd-theme-c .pd-accordion-item[data-open] .pd-accordion-head .pd-accordion-icon { transform: rotate(360deg); color: #111; }
+.pd-detail.pd-theme-c .pd-accordion-item[data-open] .pd-accordion-head .pd-accordion-icon::after { opacity: 0; }
 .pd-detail.pd-theme-c .pd-accordion-body { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
 .pd-detail.pd-theme-c .pd-accordion-body-inner {
   padding: 0 0 20px; line-height: 1.65; color: #4b5563; font-size: 0.9375rem; border-top: none;
@@ -760,17 +790,18 @@ function getThemeStylesD(): string {
   transition: background 0.2s;
 }
 .pd-detail.pd-theme-d .pd-accordion-head:hover { background: #fce7f3; }
-.pd-detail.pd-theme-d .pd-accordion-head::after {
-  content: '▼';
-  font-size: 0.6rem;
-  color: #e11d48;
-  margin-left: 10px;
-  flex-shrink: 0;
-  transition: color 0.2s;
+.pd-detail.pd-theme-d .pd-accordion-head .pd-accordion-icon {
+  display: inline-block; width: 1em; height: 1em; position: relative; flex-shrink: 0; margin-left: 10px; color: #e11d48;
+  transition: transform 0.4s ease;
 }
-.pd-detail.pd-theme-d .pd-accordion-item[data-open] .pd-accordion-head::after {
-  content: '▲';
+.pd-detail.pd-theme-d .pd-accordion-head .pd-accordion-icon::before {
+  content: ''; position: absolute; left: 50%; top: 50%; width: 70%; height: 2px; margin: -1px 0 0 -35%; background: currentColor; border-radius: 1px;
 }
+.pd-detail.pd-theme-d .pd-accordion-head .pd-accordion-icon::after {
+  content: ''; position: absolute; left: 50%; top: 50%; width: 2px; height: 70%; margin: -35% 0 0 -1px; background: currentColor; border-radius: 1px; transition: opacity 0.25s ease;
+}
+.pd-detail.pd-theme-d .pd-accordion-item[data-open] .pd-accordion-head .pd-accordion-icon { transform: rotate(360deg); }
+.pd-detail.pd-theme-d .pd-accordion-item[data-open] .pd-accordion-head .pd-accordion-icon::after { opacity: 0; }
 .pd-detail.pd-theme-d .pd-accordion-body { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
 .pd-detail.pd-theme-d .pd-accordion-body-inner {
   padding: 0 20px 20px;
@@ -918,8 +949,18 @@ function getThemeStylesE(): string {
   color: #111; background: transparent; border: none; cursor: pointer;
   display: flex; justify-content: space-between; align-items: center;
 }
-.pd-detail.pd-theme-e .pd-accordion-head::after { content: '▼'; font-size: 0.6rem; color: #9ca3af; }
-.pd-detail.pd-theme-e .pd-accordion-item[data-open] .pd-accordion-head::after { content: '▲'; }
+.pd-detail.pd-theme-e .pd-accordion-head .pd-accordion-icon {
+  display: inline-block; width: 1em; height: 1em; position: relative; flex-shrink: 0; margin-left: 10px; color: #9ca3af;
+  transition: transform 0.4s ease;
+}
+.pd-detail.pd-theme-e .pd-accordion-head .pd-accordion-icon::before {
+  content: ''; position: absolute; left: 50%; top: 50%; width: 70%; height: 2px; margin: -1px 0 0 -35%; background: currentColor; border-radius: 1px;
+}
+.pd-detail.pd-theme-e .pd-accordion-head .pd-accordion-icon::after {
+  content: ''; position: absolute; left: 50%; top: 50%; width: 2px; height: 70%; margin: -35% 0 0 -1px; background: currentColor; border-radius: 1px; transition: opacity 0.25s ease;
+}
+.pd-detail.pd-theme-e .pd-accordion-item[data-open] .pd-accordion-head .pd-accordion-icon { transform: rotate(360deg); color: #111; }
+.pd-detail.pd-theme-e .pd-accordion-item[data-open] .pd-accordion-head .pd-accordion-icon::after { opacity: 0; }
 .pd-detail.pd-theme-e .pd-accordion-body { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
 .pd-detail.pd-theme-e .pd-accordion-body-inner {
   padding: 0 0 14px; font-size: 0.9375rem; color: #4b5563; line-height: 1.6; border-top: none;
