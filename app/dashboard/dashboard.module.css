@@ -584,7 +584,7 @@
   gap: 0.5rem;
   min-width: 0;
   position: sticky;
-  top: 4rem;
+  top: 4.6rem;
   align-self: start;
   max-height: calc(100vh - 2rem);
   overflow-y: auto;
@@ -616,6 +616,28 @@
 .previewLink:hover {
   color: #047857;
   text-decoration: underline;
+}
+
+.previewBtn {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: #059669;
+  background: #fff;
+  border: 1px solid #059669;
+  border-radius: 0.5rem;
+  padding: 0.4rem 0.75rem;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.previewBtn:hover:not(:disabled) {
+  background: #059669;
+  color: #fff;
+}
+
+.previewBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .previewFrameWrap {

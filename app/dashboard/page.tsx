@@ -783,25 +783,9 @@ function DashboardContent() {
                       <button
                         type="button"
                         onClick={() => openPreviewInNewWindow(p.productNo)}
-                        className={styles.previewLink}
+                        className={styles.previewBtn}
                       >
                         새 창에서 보기
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => downloadPreviewAsImage("png", previewHtml, p.productName)}
-                        disabled={capturingImage}
-                        className={styles.previewLink}
-                      >
-                        {capturingImage ? "변환 중…" : "PNG로 저장"}
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => downloadPreviewAsImage("jpeg", previewHtml, p.productName)}
-                        disabled={capturingImage}
-                        className={styles.previewLink}
-                      >
-                        {capturingImage ? "변환 중…" : "JPEG로 저장"}
                       </button>
                       <button
                         type="button"
@@ -809,9 +793,9 @@ function DashboardContent() {
                           downloadPreviewAsImage("png", previewHtml, p.productName, true)
                         }
                         disabled={capturingImage}
-                        className={styles.previewLink}
+                        className={styles.previewBtn}
                       >
-                        {capturingImage ? "변환 중…" : "PNG로 저장 (펼침)"}
+                        {capturingImage ? "변환 중…" : "PNG로 저장"}
                       </button>
                       <button
                         type="button"
@@ -819,9 +803,9 @@ function DashboardContent() {
                           downloadPreviewAsImage("jpeg", previewHtml, p.productName, true)
                         }
                         disabled={capturingImage}
-                        className={styles.previewLink}
+                        className={styles.previewBtn}
                       >
-                        {capturingImage ? "변환 중…" : "JPEG로 저장 (펼침)"}
+                        {capturingImage ? "변환 중…" : "JPEG로 저장"}
                       </button>
                     </div>
                   </div>
