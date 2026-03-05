@@ -339,13 +339,13 @@
 
 .templateTextarea {
   width: 100%;
-  min-height: 80px;
+  min-height: 100px;
   padding: 0.5rem 0.75rem;
+  resize: vertical;
   border-radius: 0.5rem;
   border: 1px solid #e2e8f0;
   font-size: 0.875rem;
   color: #1e293b;
-  resize: vertical;
 }
 
 .templateTextarea:focus {
@@ -432,21 +432,15 @@
 
 .detailBody {
   padding: 1rem;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 768px) {
   .detailBody {
     padding: 1.5rem;
-    gap: 2rem;
-  }
-}
-
-@media (max-width: 1023px) {
-  .detailBody {
-    grid-template-columns: 1fr;
+    gap: 2.5rem;
   }
 }
 
@@ -454,6 +448,7 @@
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  min-width: 0;
 }
 
 .label {
@@ -495,6 +490,7 @@
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  min-width: 0;
 }
 
 .previewHeader {
