@@ -62,6 +62,12 @@ const COMMON_FIELDS: TemplateField[] = [
     placeholder: "YouTube 또는 Vimeo 링크",
   },
   {
+    key: "sec5_title",
+    label: "섹션5 제목 (비우면 '자주 묻는 질문', 내용 없으면 섹션 숨김)",
+    type: "text",
+    placeholder: "예: QnA, 자주 묻는 질문",
+  },
+  {
     key: "sec5_qa",
     label: "섹션5 Q&A (한 줄에 하나, 질문::답변)",
     type: "textarea",
@@ -72,30 +78,150 @@ const COMMON_FIELDS: TemplateField[] = [
 
 /** 템플릿 E 전용 필드: 이미지 참고 4섹션 (텍스트+이미지 / 3원형카드 / 불릿+이미지 / 이미지+아코디언) + Q&A */
 const FIELDS_E: TemplateField[] = [
-  { key: "sec1_heading1", label: "섹션1 제목1", type: "text", placeholder: "예: Easiest Retinol Ever" },
-  { key: "sec1_text1", label: "섹션1 본문1", type: "textarea", placeholder: "첫 번째 블록 본문" },
-  { key: "sec1_heading2", label: "섹션1 제목2", type: "text", placeholder: "예: Gentle Daily Firming" },
-  { key: "sec1_text2", label: "섹션1 본문2", type: "textarea", placeholder: "두 번째 블록 본문" },
-  { key: "sec1_imageUrl", label: "섹션1 이미지 (오른쪽)", type: "url", placeholder: "https://..." },
-  { key: "sec2_1_imageUrl", label: "섹션2-1 원형 이미지", type: "url", placeholder: "https://..." },
-  { key: "sec2_1_title", label: "섹션2-1 제목", type: "text", placeholder: "예: Boosts Bounce" },
-  { key: "sec2_1_text", label: "섹션2-1 설명", type: "textarea", placeholder: "한 줄 설명" },
-  { key: "sec2_2_imageUrl", label: "섹션2-2 원형 이미지", type: "url", placeholder: "https://..." },
-  { key: "sec2_2_title", label: "섹션2-2 제목", type: "text", placeholder: "예: Soothes" },
-  { key: "sec2_2_text", label: "섹션2-2 설명", type: "textarea", placeholder: "한 줄 설명" },
-  { key: "sec2_3_imageUrl", label: "섹션2-3 원형 이미지", type: "url", placeholder: "https://..." },
-  { key: "sec2_3_title", label: "섹션2-3 제목", type: "text", placeholder: "예: Balances" },
-  { key: "sec2_3_text", label: "섹션2-3 설명", type: "textarea", placeholder: "한 줄 설명" },
-  { key: "sec3_title", label: "섹션3 제목", type: "text", placeholder: "예: Clinical Results After 4 Weeks" },
-  { key: "sec3_bullets", label: "섹션3 불릿 (한 줄에 하나)", type: "textarea", placeholder: "항목1\n항목2\n항목3" },
-  { key: "sec3_footnote", label: "섹션3 각주", type: "text", placeholder: "출처·면책 문구" },
-  { key: "sec3_imageUrl", label: "섹션3 이미지 (오른쪽)", type: "url", placeholder: "https://..." },
-  { key: "sec4_imageUrl", label: "섹션4 이미지 (왼쪽)", type: "url", placeholder: "https://..." },
-  { key: "sec4_heading", label: "섹션4 제목", type: "text", placeholder: "예: Key Ingredients" },
-  { key: "sec4_items", label: "섹션4 아코디언 (제목::내용 한 줄씩)", type: "textarea", placeholder: "성분명::설명\n..." },
-  { key: "sec4_linkText", label: "섹션4 링크 글자", type: "text", placeholder: "예: Full Ingredient List" },
-  { key: "sec4_linkUrl", label: "섹션4 링크 URL", type: "url", placeholder: "https://..." },
-  { key: "sec5_qa", label: "섹션5 Q&A (질문::답변 한 줄씩)", type: "textarea", placeholder: "질문::답변\n..." },
+  {
+    key: "sec1_heading1",
+    label: "섹션1 제목1",
+    type: "text",
+    placeholder: "예: Easiest Retinol Ever",
+  },
+  {
+    key: "sec1_text1",
+    label: "섹션1 본문1",
+    type: "textarea",
+    placeholder: "첫 번째 블록 본문",
+  },
+  {
+    key: "sec1_heading2",
+    label: "섹션1 제목2",
+    type: "text",
+    placeholder: "예: Gentle Daily Firming",
+  },
+  {
+    key: "sec1_text2",
+    label: "섹션1 본문2",
+    type: "textarea",
+    placeholder: "두 번째 블록 본문",
+  },
+  {
+    key: "sec1_imageUrl",
+    label: "섹션1 이미지 (오른쪽)",
+    type: "url",
+    placeholder: "https://...",
+  },
+  {
+    key: "sec2_1_imageUrl",
+    label: "섹션2-1 원형 이미지",
+    type: "url",
+    placeholder: "https://...",
+  },
+  {
+    key: "sec2_1_title",
+    label: "섹션2-1 제목",
+    type: "text",
+    placeholder: "예: Boosts Bounce",
+  },
+  {
+    key: "sec2_1_text",
+    label: "섹션2-1 설명",
+    type: "textarea",
+    placeholder: "한 줄 설명",
+  },
+  {
+    key: "sec2_2_imageUrl",
+    label: "섹션2-2 원형 이미지",
+    type: "url",
+    placeholder: "https://...",
+  },
+  {
+    key: "sec2_2_title",
+    label: "섹션2-2 제목",
+    type: "text",
+    placeholder: "예: Soothes",
+  },
+  {
+    key: "sec2_2_text",
+    label: "섹션2-2 설명",
+    type: "textarea",
+    placeholder: "한 줄 설명",
+  },
+  {
+    key: "sec2_3_imageUrl",
+    label: "섹션2-3 원형 이미지",
+    type: "url",
+    placeholder: "https://...",
+  },
+  {
+    key: "sec2_3_title",
+    label: "섹션2-3 제목",
+    type: "text",
+    placeholder: "예: Balances",
+  },
+  {
+    key: "sec2_3_text",
+    label: "섹션2-3 설명",
+    type: "textarea",
+    placeholder: "한 줄 설명",
+  },
+  {
+    key: "sec3_title",
+    label: "섹션3 제목",
+    type: "text",
+    placeholder: "예: Clinical Results After 4 Weeks",
+  },
+  {
+    key: "sec3_bullets",
+    label: "섹션3 불릿 (한 줄에 하나)",
+    type: "textarea",
+    placeholder: "항목1\n항목2\n항목3",
+  },
+  {
+    key: "sec3_footnote",
+    label: "섹션3 각주",
+    type: "text",
+    placeholder: "출처·면책 문구",
+  },
+  {
+    key: "sec3_imageUrl",
+    label: "섹션3 이미지 (오른쪽)",
+    type: "url",
+    placeholder: "https://...",
+  },
+  {
+    key: "sec4_imageUrl",
+    label: "섹션4 이미지 (왼쪽)",
+    type: "url",
+    placeholder: "https://...",
+  },
+  {
+    key: "sec4_heading",
+    label: "섹션4 제목",
+    type: "text",
+    placeholder: "예: Key Ingredients",
+  },
+  {
+    key: "sec4_items",
+    label: "섹션4 아코디언 (제목::내용 한 줄씩)",
+    type: "textarea",
+    placeholder: "성분명::설명\n...",
+  },
+  {
+    key: "sec4_linkText",
+    label: "섹션4 링크 글자",
+    type: "text",
+    placeholder: "예: Full Ingredient List",
+  },
+  {
+    key: "sec4_linkUrl",
+    label: "섹션4 링크 URL",
+    type: "url",
+    placeholder: "https://...",
+  },
+  {
+    key: "sec5_qa",
+    label: "섹션5 Q&A (질문::답변 한 줄씩)",
+    type: "textarea",
+    placeholder: "질문::답변\n...",
+  },
 ];
 
 function escapeHtml(s: string): string {
@@ -193,8 +319,8 @@ function getSectionsHtml(): string {
   <h3 class="pd-sec4-title">동영상</h3>
   {{sec4_videoEmbed}}
 </section>
-<section class="pd-sec pd-sec5" data-reveal>
-  <h3 class="pd-sec5-title">자주 묻는 질문</h3>
+<section class="pd-sec pd-sec5 {{sec5_section_class}}" data-reveal>
+  <h3 class="pd-sec5-title">{{sec5_title}}</h3>
   <div class="pd-qa-list">{{sec5_qa}}</div>
 </section>`;
 }
@@ -224,9 +350,9 @@ function getSectionsHtmlB(): string {
   <h3 class="pd-sec4-title">동영상</h3>
   {{sec4_videoEmbed}}
 </section>
-<section class="pd-sec pd-sec5 pd-sec5-b" data-reveal>
+<section class="pd-sec pd-sec5 pd-sec5-b {{sec5_section_class}}" data-reveal>
   <p class="pd-sec-label">FAQ</p>
-  <h3 class="pd-sec5-title">자주 묻는 질문</h3>
+  <h3 class="pd-sec5-title">{{sec5_title}}</h3>
   <div class="pd-qa-list">{{sec5_qa}}</div>
 </section>`;
 }
@@ -250,395 +376,224 @@ function getSectionsHtmlC(): string {
   <span class="pd-sec-c-label">동영상</span>
   {{sec4_videoEmbed}}
 </section>
-<section class="pd-sec pd-sec5 pd-sec5-c" data-reveal>
-  <span class="pd-sec-c-label">자주 묻는 질문</span>
+<section class="pd-sec pd-sec5 pd-sec5-c {{sec5_section_class}}" data-reveal>
+  <span class="pd-sec-c-label">{{sec5_title}}</span>
   <div class="pd-qa-list">{{sec5_qa}}</div>
 </section>`;
 }
 
-/** 테마 A: 밝고 심플, 연한 그레이 톤 */
+/** 테마 A: 밝고 심플, E처럼 세련된 연한 크림 톤 */
 function getThemeStylesA(): string {
   return `
 .pd-detail-wrap { width: 100%; max-width: 1230px; margin: 0 auto; }
-.pd-detail.pd-theme-a { font-family: 'Malgun Gothic', sans-serif; width: 100%; margin: 0; padding: 0; color: #374151; }
-.pd-detail.pd-theme-a .pd-sec { padding: 32px 0; border-bottom: 1px solid #e5e7eb; }
+.pd-detail.pd-theme-a {
+  font-family: 'Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+  width: 100%; margin: 0; padding: 0;
+  color: #374151; background: #fcfaf9; line-height: 1.65;
+}
+.pd-detail.pd-theme-a .pd-sec { padding: 48px 24px; border-bottom: 1px solid #ebe8e6; }
 .pd-detail.pd-theme-a .pd-sec:last-child { border-bottom: none; }
 .pd-detail.pd-theme-a .pd-sec1-inner,
-.pd-detail.pd-theme-a .pd-sec2-inner { display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }
+.pd-detail.pd-theme-a .pd-sec2-inner { display: flex; align-items: center; gap: 40px; flex-wrap: wrap; }
 .pd-detail.pd-theme-a .pd-sec1-img,
-.pd-detail.pd-theme-a .pd-sec2-img { flex: 1 1 280px; }
+.pd-detail.pd-theme-a .pd-sec2-img { flex: 1 1 320px; border-radius: 12px; overflow: hidden; }
 .pd-detail.pd-theme-a .pd-sec1-img img,
 .pd-detail.pd-theme-a .pd-sec2-img img {
-  width: 100%;
-  max-width: 100%;
-  height: auto;
-  max-height: 560px;
-  object-fit: contain;
-  object-position: center;
-  border-radius: 8px;
-  display: block;
-  background: #f3f4f6;
+  width: 100%; max-width: 100%; height: auto; max-height: 480px;
+  object-fit: contain; object-position: center; display: block; background: #f5f5f4;
 }
 .pd-detail.pd-theme-a .pd-sec1-text,
-.pd-detail.pd-theme-a .pd-sec2-text { flex: 1 1 280px; line-height: 1.7; white-space: pre-wrap; }
+.pd-detail.pd-theme-a .pd-sec2-text {
+  flex: 1 1 320px; font-size: 0.9375rem; color: #4b5563; line-height: 1.7; white-space: pre-wrap;
+}
 .pd-detail.pd-theme-a .pd-sec3-title,
 .pd-detail.pd-theme-a .pd-sec4-title,
-.pd-detail.pd-theme-a .pd-sec5-title { margin: 0 0 16px; font-size: 1.1rem; color: #111827; }
-.pd-detail.pd-theme-a .pd-accordion-item { border: 1px solid #e5e7eb; border-radius: 8px; margin-bottom: 8px; overflow: hidden; }
-.pd-detail.pd-theme-a .pd-accordion-head { width: 100%; padding: 14px 16px; text-align: left; font-size: 1rem; font-weight: 600; color: #111827; background: #f9fafb; border: none; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
-.pd-detail.pd-theme-a .pd-accordion-head::after { content: '+'; font-size: 1.2rem; }
-.pd-detail.pd-theme-a .pd-accordion-item[data-open] .pd-accordion-head::after { content: '−'; }
+.pd-detail.pd-theme-a .pd-sec5-title {
+  margin: 0 0 20px; font-size: 1.125rem; font-weight: 600; color: #111;
+}
+.pd-detail.pd-theme-a .pd-accordion-item {
+  border: 1px solid #e5e7eb; border-radius: 12px; margin-bottom: 10px; overflow: hidden; transition: border-color 0.2s;
+}
+.pd-detail.pd-theme-a .pd-accordion-item:hover { border-color: #d1d5db; }
+.pd-detail.pd-theme-a .pd-accordion-head {
+  width: 100%; padding: 16px 20px; text-align: left; font-size: 0.9375rem; font-weight: 600; color: #111;
+  background: transparent; border: none; cursor: pointer; display: flex; justify-content: space-between; align-items: center;
+}
+.pd-detail.pd-theme-a .pd-accordion-head::after { content: '▼'; font-size: 0.6rem; color: #9ca3af; }
+.pd-detail.pd-theme-a .pd-accordion-item[data-open] .pd-accordion-head::after { content: '▲'; }
 .pd-detail.pd-theme-a .pd-accordion-body { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
-.pd-detail.pd-theme-a .pd-accordion-body-inner { padding: 16px; line-height: 1.6; color: #4b5563; border-top: 1px solid #e5e7eb; }
-.pd-detail.pd-theme-a .pd-video-wrap { position: relative; width: 100%; padding-bottom: 56.25%; height: 0; border-radius: 8px; overflow: hidden; background: #000; }
+.pd-detail.pd-theme-a .pd-accordion-body-inner { padding: 0 20px 20px; line-height: 1.65; color: #4b5563; font-size: 0.9375rem; border-top: none; }
+.pd-detail.pd-theme-a .pd-video-wrap {
+  position: relative; width: 100%; padding-bottom: 56.25%; height: 0; border-radius: 12px; overflow: hidden; background: #0a0a0a;
+}
 .pd-detail.pd-theme-a .pd-video-wrap iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
-.pd-detail.pd-theme-a .pd-qa-item { border-bottom: 1px solid #e5e7eb; padding: 14px 0; }
+.pd-detail.pd-theme-a .pd-qa-item { padding: 18px 0; border-bottom: 1px solid #e5e7eb; }
 .pd-detail.pd-theme-a .pd-qa-item:last-child { border-bottom: none; }
-.pd-detail.pd-theme-a .pd-qa-q { font-weight: 600; color: #111827; margin-bottom: 6px; }
-.pd-detail.pd-theme-a .pd-qa-a { font-size: 0.95rem; color: #6b7280; line-height: 1.6; }
+.pd-detail.pd-theme-a .pd-qa-q { font-weight: 600; color: #111; margin-bottom: 8px; font-size: 0.9375rem; }
+.pd-detail.pd-theme-a .pd-qa-a { font-size: 0.9375rem; color: #4b5563; line-height: 1.65; }
 .pd-detail.pd-theme-a .pd-sec[data-visible] { opacity: 1; transform: translateY(0); }
-.pd-detail.pd-theme-a .pd-sec { opacity: 0; transform: translateY(20px); transition: opacity 0.5s ease, transform 0.5s ease; }
+.pd-detail.pd-theme-a .pd-sec { opacity: 0; transform: translateY(18px); transition: opacity 0.5s ease, transform 0.5s ease; }
+.pd-detail.pd-theme-a .pd-sec5-hidden { display: none; }
 `;
 }
 
-/** 테마 B: 프리미엄 상세 – 여백·타이포·카드로 정돈된 레이아웃 */
+/** 테마 B: 프리미엄 상세 – E처럼 세련된 여백·타이포·이미지 크기 */
 function getThemeStylesB(): string {
   return `
 .pd-detail-wrap { width: 100%; max-width: 1230px; margin: 0 auto; }
 .pd-detail.pd-theme-b {
   font-family: 'Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
-  width: 100%;
-  margin: 0;
-  padding: 0;
+  width: 100%; margin: 0; padding: 0;
   color: #374151;
-  background: linear-gradient(180deg, #fafaf9 0%, #ffffff 12%);
+  background: linear-gradient(180deg, #fcfaf9 0%, #fff 15%);
   line-height: 1.65;
 }
-.pd-detail.pd-theme-b .pd-sec { padding: 48px 0; }
+.pd-detail.pd-theme-b .pd-sec  { padding: 60px 24px; }
 .pd-detail.pd-theme-b .pd-sec-label {
-  font-size: 0.7rem;
-  font-weight: 600;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: #a8a29e;
-  margin: 0 0 6px;
+  font-size: 0.7rem; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase;
+  color: #9ca3af; margin: 0 0 8px;
 }
 .pd-detail.pd-theme-b .pd-sec1-b { padding-top: 0; }
 .pd-detail.pd-theme-b .pd-sec1-hero {
-  border-radius: 16px;
-  overflow: hidden;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04);
-  margin-bottom: 24px;
+  border-radius: 16px; overflow: hidden;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.04); margin-bottom: 24px;
 }
 .pd-detail.pd-theme-b .pd-sec1-img img {
-  width: 100%;
-  max-width: 100%;
-  height: auto;
-  max-height: 560px;
-  object-fit: contain;
-  object-position: center;
-  display: block;
-  vertical-align: middle;
-  background: #f5f5f4;
+  width: 100%; max-width: 100%; height: auto; max-height: 480px;
+  object-fit: contain; object-position: center; display: block; background: #f5f5f4;
 }
 .pd-detail.pd-theme-b .pd-sec1-card {
-  background: #fff;
-  border-radius: 12px;
-  padding: 28px 24px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
-  border: 1px solid #f0efed;
+  background: #fff; border-radius: 12px; padding: 28px 26px;
+  border: 1px solid #ebe8e6; box-shadow: 0 1px 2px rgba(0,0,0,0.03);
 }
 .pd-detail.pd-theme-b .pd-sec1-text {
-  white-space: pre-wrap;
-  font-size: 0.9375rem;
-  color: #44403c;
-  line-height: 1.75;
+  white-space: pre-wrap; font-size: 0.9375rem; color: #4b5563; line-height: 1.7;
 }
 .pd-detail.pd-theme-b .pd-sec2-b { padding-top: 24px; }
 .pd-detail.pd-theme-b .pd-sec2-inner {
-  display: flex;
-  align-items: center;
-  gap: 40px;
-  flex-wrap: wrap;
+  display: flex; align-items: center; gap: 40px; flex-wrap: wrap;
 }
 .pd-detail.pd-theme-b .pd-sec2-text-wrap {
-  flex: 1 1 280px;
-  border-left: 3px solid #d6d3d1;
-  padding-left: 20px;
+  flex: 1 1 320px; border-left: 3px solid #e5e7eb; padding-left: 20px;
 }
 .pd-detail.pd-theme-b .pd-sec2-text {
-  white-space: pre-wrap;
-  font-size: 0.9375rem;
-  color: #44403c;
-  line-height: 1.75;
+  white-space: pre-wrap; font-size: 0.9375rem; color: #4b5563; line-height: 1.7;
 }
 .pd-detail.pd-theme-b .pd-sec2-img {
-  flex: 1 1 280px;
-  border-radius: 16px;
-  overflow: hidden;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04);
+  flex: 1 1 320px; border-radius: 16px; overflow: hidden;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.04);
 }
 .pd-detail.pd-theme-b .pd-sec2-img img {
-  width: 100%;
-  max-width: 100%;
-  height: auto;
-  max-height: 560px;
-  object-fit: contain;
-  object-position: center;
-  display: block;
-  background: #f5f5f4;
+  width: 100%; max-width: 100%; height: auto; max-height: 480px;
+  object-fit: contain; object-position: center; display: block; background: #f5f5f4;
 }
 .pd-detail.pd-theme-b .pd-sec3-title,
 .pd-detail.pd-theme-b .pd-sec4-title,
 .pd-detail.pd-theme-b .pd-sec5-title {
-  margin: 0 0 20px;
-  font-size: 1.125rem;
-  font-weight: 600;
-  color: #1c1917;
-  letter-spacing: -0.01em;
+  margin: 0 0 20px; font-size: 1.125rem; font-weight: 600; color: #111; letter-spacing: -0.01em;
 }
 .pd-detail.pd-theme-b .pd-accordion-item {
-  background: #fff;
-  border: 1px solid #e7e5e4;
-  border-radius: 12px;
-  margin-bottom: 10px;
-  overflow: hidden;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; margin-bottom: 10px;
+  overflow: hidden; transition: border-color 0.2s, box-shadow 0.2s;
 }
-.pd-detail.pd-theme-b .pd-accordion-item:hover { border-color: #d6d3d1; }
-.pd-detail.pd-theme-b .pd-accordion-item[data-open] { box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+.pd-detail.pd-theme-b .pd-accordion-item:hover { border-color: #d1d5db; }
+.pd-detail.pd-theme-b .pd-accordion-item[data-open] { box-shadow: 0 2px 8px rgba(0,0,0,0.03); }
 .pd-detail.pd-theme-b .pd-accordion-head {
-  width: 100%;
-  padding: 18px 20px;
-  text-align: left;
-  font-size: 0.9375rem;
-  font-weight: 600;
-  color: #1c1917;
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  transition: background 0.2s;
+  width: 100%; padding: 18px 20px; text-align: left; font-size: 0.9375rem; font-weight: 600;
+  color: #111; background: transparent; border: none; cursor: pointer;
+  display: flex; justify-content: space-between; align-items: center; transition: background 0.2s;
 }
-.pd-detail.pd-theme-b .pd-accordion-head:hover { background: #fafaf9; }
-.pd-detail.pd-theme-b .pd-accordion-head::after {
-  content: '▼';
-  font-size: 0.6rem;
-  color: #a8a29e;
-  margin-left: 10px;
-  flex-shrink: 0;
-  transition: transform 0.25s ease, color 0.2s;
-}
-.pd-detail.pd-theme-b .pd-accordion-item[data-open] .pd-accordion-head::after {
-  content: '▲';
-  color: #1c1917;
-}
+.pd-detail.pd-theme-b .pd-accordion-head:hover { background: #fcfaf9; }
+.pd-detail.pd-theme-b .pd-accordion-head::after { content: '▼'; font-size: 0.6rem; color: #9ca3af; margin-left: 10px; flex-shrink: 0; }
+.pd-detail.pd-theme-b .pd-accordion-item[data-open] .pd-accordion-head::after { content: '▲'; color: #111; }
 .pd-detail.pd-theme-b .pd-accordion-body { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
 .pd-detail.pd-theme-b .pd-accordion-body-inner {
-  padding: 0 20px 20px;
-  line-height: 1.7;
-  color: #57534e;
-  font-size: 0.9375rem;
-  border-top: none;
+  padding: 0 20px 20px; line-height: 1.65; color: #4b5563; font-size: 0.9375rem; border-top: none;
 }
 .pd-detail.pd-theme-b .pd-video-wrap {
-  position: relative;
-  width: 100%;
-  padding-bottom: 56.25%;
-  height: 0;
-  border-radius: 16px;
-  overflow: hidden;
-  background: #0c0c0c;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.06);
+  position: relative; width: 100%; padding-bottom: 56.25%; height: 0;
+  border-radius: 16px; overflow: hidden; background: #0a0a0a; box-shadow: 0 2px 16px rgba(0,0,0,0.06);
 }
-.pd-detail.pd-theme-b .pd-video-wrap iframe {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-}
+.pd-detail.pd-theme-b .pd-video-wrap iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
 .pd-detail.pd-theme-b .pd-qa-item {
-  background: #fff;
-  border: 1px solid #e7e5e4;
-  border-radius: 12px;
-  padding: 20px 22px;
-  margin-bottom: 10px;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 20px 22px; margin-bottom: 10px;
+  transition: border-color 0.2s;
 }
 .pd-detail.pd-theme-b .pd-qa-item:last-child { margin-bottom: 0; }
-.pd-detail.pd-theme-b .pd-qa-item:hover { border-color: #d6d3d1; }
+.pd-detail.pd-theme-b .pd-qa-item:hover { border-color: #d1d5db; }
 .pd-detail.pd-theme-b .pd-qa-q {
-  font-weight: 600;
-  color: #1c1917;
-  font-size: 0.9375rem;
-  margin-bottom: 10px;
-  padding-left: 14px;
-  border-left: 3px solid #d6d3d1;
+  font-weight: 600; color: #111; font-size: 0.9375rem; margin-bottom: 10px; padding-left: 14px; border-left: 3px solid #e5e7eb;
 }
-.pd-detail.pd-theme-b .pd-qa-a {
-  font-size: 0.875rem;
-  color: #57534e;
-  line-height: 1.7;
-  padding-left: 14px;
-}
+.pd-detail.pd-theme-b .pd-qa-a { font-size: 0.9375rem; color: #4b5563; line-height: 1.65; padding-left: 14px; }
 .pd-detail.pd-theme-b .pd-sec[data-visible] { opacity: 1; transform: translateY(0); }
-.pd-detail.pd-theme-b .pd-sec {
-  opacity: 0;
-  transform: translateY(20px);
-  transition: opacity 0.5s ease, transform 0.5s ease;
-}
+.pd-detail.pd-theme-b .pd-sec { opacity: 0; transform: translateY(18px); transition: opacity 0.5s ease, transform 0.5s ease; }
 `;
 }
 
-/** 테마 C: 미니멀 에디토리얼 – 좁은 단, 세리프, 블랙/화이트 */
+/** 테마 C: 미니멀 에디토리얼 – E처럼 세련된 좁은 단, 세리프, 블랙/화이트 */
 function getThemeStylesC(): string {
   return `
+.pd-detail-wrap { width: 100%; max-width: 1230px; margin: 0 auto; }
 .pd-detail.pd-theme-c {
   font-family: Georgia, 'Times New Roman', 'Malgun Gothic', serif;
-  width: 100%;
-  margin: 0;
-  padding: 0;
-  color: #171717;
-  background: #fff;
-  line-height: 1.7;
+  width: 100%; margin: 0; padding: 0;
+  color: #111; background: #fcfaf9; line-height: 1.65;
 }
-.pd-detail.pd-theme-c .pd-sec { padding: 48px 0; }
+.pd-detail.pd-theme-c .pd-sec  { padding: 60px 24px; }
 .pd-detail.pd-theme-c .pd-sec-c-label {
-  display: block;
-  font-family: 'Malgun Gothic', sans-serif;
-  font-size: 0.6875rem;
-  font-weight: 600;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: #737373;
-  margin-bottom: 20px;
+  display: block; font-family: 'Pretendard', 'Malgun Gothic', sans-serif;
+  font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase;
+  color: #6b7280; margin-bottom: 20px;
 }
 .pd-detail.pd-theme-c .pd-sec1-c { padding-top: 0; }
-.pd-detail.pd-theme-c .pd-sec1-img {
-  margin-bottom: 32px;
-}
+.pd-detail.pd-theme-c .pd-sec1-img { margin-bottom: 32px; border-radius: 12px; overflow: hidden; }
 .pd-detail.pd-theme-c .pd-sec1-img img {
-  width: 100%;
-  max-width: 100%;
-  height: auto;
-  max-height: 560px;
-  object-fit: contain;
-  object-position: center;
-  display: block;
-  background: #fafafa;
+  width: 100%; max-width: 100%; height: auto; max-height: 480px;
+  object-fit: contain; object-position: center; display: block; background: #f5f5f4;
 }
 .pd-detail.pd-theme-c .pd-sec1-text {
   font-family: Georgia, 'Times New Roman', 'Malgun Gothic', serif;
-  white-space: pre-wrap;
-  font-size: 0.9375rem;
-  color: #404040;
-  line-height: 1.8;
-  padding-top: 24px;
-  border-top: 1px solid #e5e5e5;
+  white-space: pre-wrap; font-size: 0.9375rem; color: #4b5563; line-height: 1.7;
+  padding-top: 24px; border-top: 1px solid #e5e7eb;
 }
 .pd-detail.pd-theme-c .pd-sec2-c .pd-sec2-text,
 .pd-detail.pd-theme-c .pd-sec2-text {
   font-family: Georgia, 'Times New Roman', 'Malgun Gothic', serif;
-  white-space: pre-wrap;
-  font-size: 0.9375rem;
-  color: #404040;
-  line-height: 1.8;
-  margin-bottom: 28px;
-  padding-bottom: 24px;
-  border-bottom: 1px solid #e5e5e5;
+  white-space: pre-wrap; font-size: 0.9375rem; color: #4b5563; line-height: 1.7;
+  margin-bottom: 28px; padding-bottom: 24px; border-bottom: 1px solid #e5e7eb;
 }
+.pd-detail.pd-theme-c .pd-sec2-img { border-radius: 12px; overflow: hidden; }
 .pd-detail.pd-theme-c .pd-sec2-img img {
-  width: 100%;
-  max-width: 100%;
-  height: auto;
-  max-height: 560px;
-  object-fit: contain;
-  object-position: center;
-  display: block;
-  background: #fafafa;
+  width: 100%; max-width: 100%; height: auto; max-height: 480px;
+  object-fit: contain; object-position: center; display: block; background: #f5f5f4;
 }
 .pd-detail.pd-theme-c .pd-accordion-item {
-  border-bottom: 1px solid #e5e5e5;
-  margin-bottom: 0;
+  border-bottom: 1px solid #e5e7eb; margin-bottom: 0;
 }
 .pd-detail.pd-theme-c .pd-accordion-head {
-  width: 100%;
-  padding: 20px 0;
-  text-align: left;
-  font-size: 0.9375rem;
-  font-weight: 600;
-  color: #171717;
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  transition: color 0.2s;
+  width: 100%; padding: 18px 0; text-align: left; font-size: 0.9375rem; font-weight: 600;
+  color: #111; background: transparent; border: none; cursor: pointer;
+  display: flex; justify-content: space-between; align-items: center; transition: color 0.2s;
 }
-.pd-detail.pd-theme-c .pd-accordion-head:hover { color: #404040; }
-.pd-detail.pd-theme-c .pd-accordion-head::after {
-  content: '+';
-  font-size: 1rem;
-  font-weight: 400;
-  color: #a3a3a3;
-  flex-shrink: 0;
-  margin-left: 12px;
-  transition: transform 0.25s ease;
-}
-.pd-detail.pd-theme-c .pd-accordion-item[data-open] .pd-accordion-head::after {
-  content: '−';
-  transform: none;
-}
+.pd-detail.pd-theme-c .pd-accordion-head:hover { color: #4b5563; }
+.pd-detail.pd-theme-c .pd-accordion-head::after { content: '▼'; font-size: 0.6rem; color: #9ca3af; flex-shrink: 0; margin-left: 12px; }
+.pd-detail.pd-theme-c .pd-accordion-item[data-open] .pd-accordion-head::after { content: '▲'; }
 .pd-detail.pd-theme-c .pd-accordion-body { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
 .pd-detail.pd-theme-c .pd-accordion-body-inner {
-  padding: 0 0 20px;
-  line-height: 1.75;
-  color: #525252;
-  font-size: 0.9375rem;
-  border-top: none;
+  padding: 0 0 20px; line-height: 1.65; color: #4b5563; font-size: 0.9375rem; border-top: none;
 }
 .pd-detail.pd-theme-c .pd-video-wrap {
-  position: relative;
-  width: 100%;
-  padding-bottom: 56.25%;
-  height: 0;
-  overflow: hidden;
-  background: #0a0a0a;
-  margin-top: 8px;
+  position: relative; width: 100%; padding-bottom: 56.25%; height: 0;
+  border-radius: 12px; overflow: hidden; background: #0a0a0a; margin-top: 8px;
 }
-.pd-detail.pd-theme-c .pd-video-wrap iframe {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-}
-.pd-detail.pd-theme-c .pd-qa-item {
-  padding: 22px 0;
-  border-bottom: 1px solid #e5e5e5;
-}
+.pd-detail.pd-theme-c .pd-video-wrap iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+.pd-detail.pd-theme-c .pd-qa-item { padding: 20px 0; border-bottom: 1px solid #e5e7eb; }
 .pd-detail.pd-theme-c .pd-qa-item:last-child { border-bottom: none; }
-.pd-detail.pd-theme-c .pd-qa-q {
-  font-weight: 600;
-  color: #171717;
-  font-size: 0.9375rem;
-  margin-bottom: 8px;
-}
-.pd-detail.pd-theme-c .pd-qa-a {
-  font-size: 0.9375rem;
-  color: #525252;
-  line-height: 1.75;
-}
+.pd-detail.pd-theme-c .pd-qa-q { font-weight: 600; color: #111; font-size: 0.9375rem; margin-bottom: 8px; }
+.pd-detail.pd-theme-c .pd-qa-a { font-size: 0.9375rem; color: #4b5563; line-height: 1.65; }
 .pd-detail.pd-theme-c .pd-sec[data-visible] { opacity: 1; transform: translateY(0); }
-.pd-detail.pd-theme-c .pd-sec {
-  opacity: 0;
-  transform: translateY(12px);
-  transition: opacity 0.5s ease, transform 0.5s ease;
-}
+.pd-detail.pd-theme-c .pd-sec { opacity: 0; transform: translateY(18px); transition: opacity 0.5s ease, transform 0.5s ease; }
+.pd-detail.pd-theme-c .pd-sec5-hidden { display: none; }
 `;
 }
 
@@ -665,8 +620,8 @@ function getSectionsHtmlD(): string {
   <span class="pd-sec-d-label">동영상</span>
   {{sec4_videoEmbed}}
 </section>
-<section class="pd-sec pd-sec5 pd-sec5-d" data-reveal>
-  <span class="pd-sec-d-label">자주 묻는 질문</span>
+<section class="pd-sec pd-sec5 pd-sec5-d {{sec5_section_class}}" data-reveal>
+  <span class="pd-sec-d-label">{{sec5_title}}</span>
   <div class="pd-qa-list">{{sec5_qa}}</div>
 </section>`;
 }
@@ -710,104 +665,67 @@ function getSectionsHtmlE(): string {
     </div>
   </div>
 </section>
-<section class="pd-sec pd-e-sec5" data-reveal>
-  <h3 class="pd-e-sec5-title">자주 묻는 질문</h3>
+<section class="pd-sec pd-e-sec5 {{sec5_section_class}}" data-reveal>
+  <h3 class="pd-e-sec5-title">{{sec5_title}}</h3>
   <div class="pd-qa-list">{{sec5_qa}}</div>
 </section>`;
 }
 
-/** 테마 D: 이쁘게 꾸민 – 그라데이션·로즈 악센트·둥근 카드 */
+/** 테마 D: 이쁘게 꾸민 – E처럼 세련된 로즈·민트, 이미지 크기 통일 */
 function getThemeStylesD(): string {
   return `
 .pd-detail-wrap { width: 100%; max-width: 1230px; margin: 0 auto; }
 .pd-detail.pd-theme-d {
   font-family: 'Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
-  width: 100%;
-  margin: 0;
-  padding: 0;
-  color: #4a5568;
-  background: linear-gradient(180deg, #fff5f5 0%, #fff 18%, #f0fdf4 100%);
-  line-height: 1.7;
+  width: 100%; margin: 0; padding: 0 20px 48px;
+  color: #4b5563;
+  background: linear-gradient(180deg, #fef7f7 0%, #fcfaf9 20%, #f7fdf9 100%);
+  line-height: 1.65;
 }
-.pd-detail.pd-theme-d .pd-sec { padding: 44px 0; }
+.pd-detail.pd-theme-d .pd-sec { padding: 60px 24px; }
 .pd-detail.pd-theme-d .pd-sec-d-label {
-  display: inline-block;
-  font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  color: #e11d48;
-  margin-bottom: 16px;
-  padding-bottom: 6px;
-  border-bottom: 2px solid #fecdd3;
+  display: inline-block; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.15em;
+  text-transform: uppercase; color: #db2777; margin-bottom: 16px; padding-bottom: 6px;
+  border-bottom: 2px solid #fbcfe8;
 }
 .pd-detail.pd-theme-d .pd-sec1-d { padding-top: 0; }
 .pd-detail.pd-theme-d .pd-sec1-d-hero {
-  border-radius: 20px;
-  overflow: hidden;
-  box-shadow: 0 8px 30px rgba(225, 29, 72, 0.08), 0 2px 8px rgba(0,0,0,0.04);
-  margin-bottom: 28px;
+  border-radius: 16px; overflow: hidden;
+  box-shadow: 0 4px 20px rgba(219, 39, 119, 0.06); margin-bottom: 28px;
 }
 .pd-detail.pd-theme-d .pd-sec1-img img {
-  width: 100%;
-  max-width: 100%;
-  height: auto;
-  max-height: 560px;
-  object-fit: contain;
-  object-position: center;
-  display: block;
-  background: #fdf2f8;
+  width: 100%; max-width: 100%; height: auto; max-height: 480px;
+  object-fit: contain; object-position: center; display: block; background: #fdf2f8;
 }
 .pd-detail.pd-theme-d .pd-sec1-d-card {
-  background: linear-gradient(135deg, #fff 0%, #fef2f2 100%);
-  border-radius: 16px;
-  padding: 28px 26px;
-  border: 1px solid #fecdd3;
-  box-shadow: 0 2px 12px rgba(225, 29, 72, 0.06);
+  background: linear-gradient(135deg, #fff 0%, #fef7f7 100%);
+  border-radius: 16px; padding: 28px 26px; border: 1px solid #fbcfe8;
+  box-shadow: 0 2px 8px rgba(219, 39, 119, 0.04);
 }
 .pd-detail.pd-theme-d .pd-sec1-text {
   font-family: 'Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
-  white-space: pre-wrap;
-  font-size: 0.9375rem;
-  color: #5f4a5a;
-  line-height: 1.8;
+  white-space: pre-wrap; font-size: 0.9375rem; color: #5f4a5a; line-height: 1.7;
 }
 .pd-detail.pd-theme-d .pd-sec2-d .pd-sec2-inner {
-  display: flex;
-  align-items: center;
-  gap: 32px;
-  flex-wrap: wrap;
+  display: flex; align-items: center; gap: 40px; flex-wrap: wrap;
 }
 .pd-detail.pd-theme-d .pd-sec2-d-card {
-  flex: 1 1 260px;
+  flex: 1 1 320px;
   background: linear-gradient(135deg, #f0fdf4 0%, #fff 100%);
-  border-radius: 16px;
-  padding: 26px 24px;
-  border: 1px solid #bbf7d0;
-  box-shadow: 0 2px 12px rgba(34, 197, 94, 0.06);
+  border-radius: 16px; padding: 26px 24px; border: 1px solid #bbf7d0;
+  box-shadow: 0 2px 8px rgba(34, 197, 94, 0.04);
 }
 .pd-detail.pd-theme-d .pd-sec2-text {
   font-family: 'Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
-  white-space: pre-wrap;
-  font-size: 0.9375rem;
-  color: #14532d;
-  line-height: 1.8;
+  white-space: pre-wrap; font-size: 0.9375rem; color: #14532d; line-height: 1.7;
 }
 .pd-detail.pd-theme-d .pd-sec2-img {
-  flex: 1 1 260px;
-  border-radius: 20px;
-  overflow: hidden;
-  box-shadow: 0 8px 30px rgba(34, 197, 94, 0.1), 0 2px 8px rgba(0,0,0,0.04);
+  flex: 1 1 320px; border-radius: 16px; overflow: hidden;
+  box-shadow: 0 4px 20px rgba(34, 197, 94, 0.06);
 }
 .pd-detail.pd-theme-d .pd-sec2-img img {
-  width: 100%;
-  max-width: 100%;
-  height: auto;
-  max-height: 560px;
-  object-fit: contain;
-  object-position: center;
-  display: block;
-  background: #ecfdf5;
+  width: 100%; max-width: 100%; height: auto; max-height: 480px;
+  object-fit: contain; object-position: center; display: block; background: #ecfdf5;
 }
 .pd-detail.pd-theme-d .pd-accordion-item {
   background: #fff;
@@ -863,15 +781,9 @@ function getThemeStylesD(): string {
   background: #fff;
 }
 .pd-detail.pd-theme-d .pd-video-wrap {
-  position: relative;
-  width: 100%;
-  padding-bottom: 56.25%;
-  height: 0;
-  border-radius: 20px;
-  overflow: hidden;
-  background: #1a1a1a;
-  box-shadow: 0 8px 30px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.06);
-  margin-top: 8px;
+  position: relative; width: 100%; padding-bottom: 56.25%; height: 0;
+  border-radius: 16px; overflow: hidden; background: #0a0a0a;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.06); margin-top: 8px;
 }
 .pd-detail.pd-theme-d .pd-video-wrap iframe {
   position: absolute;
@@ -910,6 +822,7 @@ function getThemeStylesD(): string {
   transform: translateY(18px);
   transition: opacity 0.5s ease, transform 0.5s ease;
 }
+.pd-detail.pd-theme-d .pd-sec5-hidden { display: none; }
 `;
 }
 
@@ -919,10 +832,10 @@ function getThemeStylesE(): string {
 .pd-detail-wrap { width: 100%; max-width: 1230px; margin: 0 auto; }
 .pd-detail.pd-theme-e {
   font-family: 'Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
-  width: 100%; margin: 0; padding: 0 20px 48px;
+  width: 100%; margin: 0; padding: 0 ;
   color: #374151; background: #fcfaf9; line-height: 1.65;
 }
-.pd-detail.pd-theme-e .pd-sec { padding: 48px 0; }
+.pd-detail.pd-theme-e .pd-sec  { padding: 60px 24px; }
 .pd-detail.pd-theme-e .pd-e-sec1-inner {
   display: flex; align-items: center; gap: 48px; flex-wrap: wrap;
 }
@@ -1025,6 +938,7 @@ function getThemeStylesE(): string {
 .pd-detail.pd-theme-e .pd-sec {
   opacity: 0; transform: translateY(16px); transition: opacity 0.5s ease, transform 0.5s ease;
 }
+.pd-detail.pd-theme-e .pd-sec5-hidden { display: none; }
 `;
 }
 
@@ -1185,6 +1099,12 @@ export function fillTemplate(
   const sec4Embed =
     values.sec4_videoUrl != null ? getVideoEmbedHtml(values.sec4_videoUrl) : "";
   const sec5 = values.sec5_qa != null ? sec5QaToHtml(values.sec5_qa) : "";
+  const hasSec5 = (values.sec5_qa ?? "").trim() !== "";
+  const sec5SectionClass = hasSec5 ? "" : "pd-sec5-hidden";
+  const sec5Title =
+    values.sec5_title != null && String(values.sec5_title).trim() !== ""
+      ? escapeHtml(String(values.sec5_title).trim())
+      : "자주 묻는 질문";
   const sec3Bullets =
     values.sec3_bullets != null ? bulletsToHtml(values.sec3_bullets) : "";
   const sec4Items =
@@ -1194,6 +1114,8 @@ export function fillTemplate(
     { place: "{{sec3_items}}", value: sec3 },
     { place: "{{sec4_videoEmbed}}", value: sec4Embed },
     { place: "{{sec5_qa}}", value: sec5 },
+    { place: "{{sec5_section_class}}", value: sec5SectionClass },
+    { place: "{{sec5_title}}", value: sec5Title },
     { place: "{{sec3_bullets}}", value: sec3Bullets },
     { place: "{{sec4_items}}", value: sec4Items },
   ];
@@ -1217,6 +1139,7 @@ export function fillTemplate(
         "sec3_items",
         "sec4_videoUrl",
         "sec5_qa",
+        "sec5_title",
         "sec3_bullets",
         "sec4_items",
       ].includes(key)
@@ -1298,7 +1221,9 @@ export function parseDescriptionToValues(html: string): ParsedDescription {
             const img = card.querySelector(".pd-e-circle-img img");
             const title = card.querySelector(".pd-e-circle-title");
             const text = card.querySelector(".pd-e-circle-text");
-            values[`sec2_${i + 1}_imageUrl`] = (img?.getAttribute("src") ?? "").trim();
+            values[`sec2_${i + 1}_imageUrl`] = (
+              img?.getAttribute("src") ?? ""
+            ).trim();
             values[`sec2_${i + 1}_title`] = (title?.textContent ?? "").trim();
             values[`sec2_${i + 1}_text`] = (text?.textContent ?? "").trim();
           }
@@ -1330,7 +1255,9 @@ export function parseDescriptionToValues(html: string): ParsedDescription {
           const head = item.querySelector(".pd-accordion-head");
           const bodyInner = item.querySelector(".pd-accordion-body-inner");
           const title = (head?.textContent ?? "").trim();
-          const body = (bodyInner?.textContent ?? "").trim().replace(/\r?\n/g, "\n");
+          const body = (bodyInner?.textContent ?? "")
+            .trim()
+            .replace(/\r?\n/g, "\n");
           lines.push(`${title}::${body}`);
         });
         values.sec4_items = lines.join("\n");
@@ -1340,12 +1267,16 @@ export function parseDescriptionToValues(html: string): ParsedDescription {
       }
       const sec5 = doc.querySelector(".pd-e-sec5");
       if (sec5) {
+        const titleEl = sec5.querySelector(".pd-e-sec5-title");
+        values.sec5_title = (titleEl?.textContent ?? "").trim();
         const qaItems = sec5.querySelectorAll(".pd-qa-item");
         const qaLines: string[] = [];
         qaItems.forEach((item) => {
           const q = item.querySelector(".pd-qa-q");
           const a = item.querySelector(".pd-qa-a");
-          qaLines.push(`${(q?.textContent ?? "").trim()}::${(a?.textContent ?? "").trim()}`);
+          qaLines.push(
+            `${(q?.textContent ?? "").trim()}::${(a?.textContent ?? "").trim()}`,
+          );
         });
         values.sec5_qa = qaLines.join("\n");
       }
@@ -1398,6 +1329,17 @@ export function parseDescriptionToValues(html: string): ParsedDescription {
       );
     });
     values.sec5_qa = sec5Lines.join("\n");
+
+    if (templateId === "A" || templateId === "B") {
+      const sec5TitleEl = doc.querySelector(".pd-sec5 .pd-sec5-title");
+      values.sec5_title = (sec5TitleEl?.textContent ?? "").trim();
+    } else if (templateId === "C") {
+      const sec5Label = doc.querySelector(".pd-sec5-c .pd-sec-c-label");
+      values.sec5_title = (sec5Label?.textContent ?? "").trim();
+    } else if (templateId === "D") {
+      const sec5Label = doc.querySelector(".pd-sec5-d .pd-sec-d-label");
+      values.sec5_title = (sec5Label?.textContent ?? "").trim();
+    }
   } catch {
     return { templateId, values };
   }
