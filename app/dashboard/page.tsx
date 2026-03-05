@@ -376,9 +376,10 @@ function DashboardContent() {
 
     const iframe = document.createElement("iframe");
     const iframeHeight = expanded ? 4000 : 900;
+    const captureWidth = 1230;
     iframe.setAttribute(
       "style",
-      `position:fixed;left:-9999px;width:720px;height:${iframeHeight}px;border:none;`
+      `position:fixed;left:-9999px;width:${captureWidth}px;height:${iframeHeight}px;border:none;`
     );
     document.body.appendChild(iframe);
     const doc = iframe.contentDocument;
