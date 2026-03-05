@@ -185,7 +185,8 @@ function getSectionsHtmlC(): string {
 /** 테마 A: 밝고 심플, 연한 그레이 톤 */
 function getThemeStylesA(): string {
   return `
-.pd-detail.pd-theme-a { font-family: 'Malgun Gothic', sans-serif; max-width: 720px; margin: 0 auto; padding: 24px 16px; color: #374151; }
+.pd-detail-wrap { width: 100%; max-width: 1230px; margin: 0 auto; }
+.pd-detail.pd-theme-a { font-family: 'Malgun Gothic', sans-serif; width: 100%; margin: 0; padding: 24px 16px; color: #374151; }
 .pd-detail.pd-theme-a .pd-sec { padding: 32px 0; border-bottom: 1px solid #e5e7eb; }
 .pd-detail.pd-theme-a .pd-sec:last-child { border-bottom: none; }
 .pd-detail.pd-theme-a .pd-sec1-inner,
@@ -219,10 +220,11 @@ function getThemeStylesA(): string {
 /** 테마 B: 프리미엄 상세 – 여백·타이포·카드로 정돈된 레이아웃 */
 function getThemeStylesB(): string {
   return `
+.pd-detail-wrap { width: 100%; max-width: 1230px; margin: 0 auto; }
 .pd-detail.pd-theme-b {
   font-family: 'Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
-  max-width: 680px;
-  margin: 0 auto;
+  width: 100%;
+  margin: 0;
   padding: 0 20px 48px;
   color: #374151;
   background: linear-gradient(180deg, #fafaf9 0%, #ffffff 12%);
@@ -572,10 +574,11 @@ function getSectionsHtmlD(): string {
 /** 테마 D: 이쁘게 꾸민 – 그라데이션·로즈 악센트·둥근 카드 */
 function getThemeStylesD(): string {
   return `
+.pd-detail-wrap { width: 100%; max-width: 1230px; margin: 0 auto; }
 .pd-detail.pd-theme-d {
   font-family: 'Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
-  max-width: 640px;
-  margin: 0 auto;
+  width: 100%;
+  margin: 0;
   padding: 0 20px 56px;
   color: #4a5568;
   background: linear-gradient(180deg, #fff5f5 0%, #fff 18%, #f0fdf4 100%);
@@ -812,7 +815,7 @@ function buildFullHtml(theme: ThemeId): string {
         : theme === "D"
           ? getSectionsHtmlD()
           : getSectionsHtml();
-  return `<style>${getThemeStyles(theme)}</style><div class="pd-detail ${themeClass}">${sectionsHtml}</div><script>${getScript()}</script>`;
+  return `<style>${getThemeStyles(theme)}</style><div class="pd-detail-wrap"><div class="pd-detail ${themeClass}">${sectionsHtml}</div></div><script>${getScript()}</script>`;
 }
 
 function getTemplateA(): DescriptionTemplate {

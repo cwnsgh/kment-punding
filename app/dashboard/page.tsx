@@ -318,7 +318,7 @@ function DashboardContent() {
     if (previewWindowProductNo && previewWindowRef.current && !previewWindowRef.current.closed) {
       sendPreviewToWindow(previewWindowProductNo);
     }
-  }, [editedDescriptions, previewWindowProductNo]);
+  }, [editedDescriptions, previewWindowProductNo, templateFormValues, editMode]);
 
   const openPreviewInNewWindow = (productNo: string) => {
     if (previewWindowRef.current && !previewWindowRef.current.closed) {
@@ -375,7 +375,11 @@ function DashboardContent() {
     }
 
     const iframe = document.createElement("iframe");
-    iframe.setAttribute("style", "position:fixed;left:-9999px;width:720px;height:900px;border:none;");
+    const iframeHeight = expanded ? 4000 : 900;
+    iframe.setAttribute(
+      "style",
+      `position:fixed;left:-9999px;width:720px;height:${iframeHeight}px;border:none;`
+    );
     document.body.appendChild(iframe);
     const doc = iframe.contentDocument;
     if (!doc) {
@@ -444,7 +448,7 @@ function DashboardContent() {
           });
       };
       if (expanded) {
-        window.setTimeout(doCapture, 150);
+        window.setTimeout(doCapture, 450);
       } else {
         doCapture();
       }
