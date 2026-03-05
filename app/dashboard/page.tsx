@@ -783,9 +783,9 @@ function DashboardContent() {
                       <button
                         type="button"
                         onClick={() => openPreviewInNewWindow(p.productNo)}
-                        className={styles.previewBtn}
+                        className={styles.previewBtnDesktop}
                       >
-                        새 창에서 보기
+                        데스크톱 미리보기
                       </button>
                       <button
                         type="button"
