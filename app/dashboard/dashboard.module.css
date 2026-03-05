@@ -138,7 +138,9 @@
   border: none;
   background: transparent;
   cursor: pointer;
-  transition: color 0.15s, background 0.15s;
+  transition:
+    color 0.15s,
+    background 0.15s;
 }
 
 .backBtn:hover {
@@ -216,7 +218,9 @@
   font-weight: 500;
   border: none;
   cursor: pointer;
-  transition: background 0.15s, transform 0.05s;
+  transition:
+    background 0.15s,
+    transform 0.05s;
 }
 
 .saveBtn:hover:not(:disabled) {
@@ -264,7 +268,10 @@
   font-weight: 500;
   color: #475569;
   cursor: pointer;
-  transition: border-color 0.15s, background 0.15s, color 0.15s;
+  transition:
+    border-color 0.15s,
+    background 0.15s,
+    color 0.15s;
 }
 
 .templateBtn:hover {
@@ -282,7 +289,10 @@
   font-weight: 500;
   color: #047857;
   cursor: pointer;
-  transition: border-color 0.15s, background 0.15s, color 0.15s;
+  transition:
+    border-color 0.15s,
+    background 0.15s,
+    color 0.15s;
 }
 
 .templateBtnActive:hover {
@@ -373,7 +383,9 @@
   color: #64748b;
   background: #f8fafc;
   cursor: pointer;
-  transition: border-color 0.15s, background 0.15s;
+  transition:
+    border-color 0.15s,
+    background 0.15s;
 }
 
 .imageUploadDropzone:hover,
@@ -572,7 +584,7 @@
   gap: 0.5rem;
   min-width: 0;
   position: sticky;
-  top: 1rem;
+  top: 2rem;
   align-self: start;
   max-height: calc(100vh - 2rem);
   overflow-y: auto;
