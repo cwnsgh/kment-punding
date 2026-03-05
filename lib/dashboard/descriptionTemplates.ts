@@ -14,14 +14,14 @@ export type TemplateField = {
 };
 
 export type DescriptionTemplate = {
-  id: "A" | "B" | "C" | "D";
+  id: "A" | "B" | "C" | "D" | "E";
   name: string;
   description: string;
   fields: TemplateField[];
   html: string;
 };
 
-type ThemeId = "A" | "B" | "C" | "D";
+type ThemeId = "A" | "B" | "C" | "D" | "E";
 
 /** 공통 필드: 5개 섹션에 필요한 입력값 */
 const COMMON_FIELDS: TemplateField[] = [
@@ -68,6 +68,34 @@ const COMMON_FIELDS: TemplateField[] = [
     placeholder:
       "교환 가능한가요?::7일 이내 미개봉 시 가능합니다\n재고 있나요?::실시간 재고는 문의 주세요",
   },
+];
+
+/** 템플릿 E 전용 필드: 이미지 참고 4섹션 (텍스트+이미지 / 3원형카드 / 불릿+이미지 / 이미지+아코디언) + Q&A */
+const FIELDS_E: TemplateField[] = [
+  { key: "sec1_heading1", label: "섹션1 제목1", type: "text", placeholder: "예: Easiest Retinol Ever" },
+  { key: "sec1_text1", label: "섹션1 본문1", type: "textarea", placeholder: "첫 번째 블록 본문" },
+  { key: "sec1_heading2", label: "섹션1 제목2", type: "text", placeholder: "예: Gentle Daily Firming" },
+  { key: "sec1_text2", label: "섹션1 본문2", type: "textarea", placeholder: "두 번째 블록 본문" },
+  { key: "sec1_imageUrl", label: "섹션1 이미지 (오른쪽)", type: "url", placeholder: "https://..." },
+  { key: "sec2_1_imageUrl", label: "섹션2-1 원형 이미지", type: "url", placeholder: "https://..." },
+  { key: "sec2_1_title", label: "섹션2-1 제목", type: "text", placeholder: "예: Boosts Bounce" },
+  { key: "sec2_1_text", label: "섹션2-1 설명", type: "textarea", placeholder: "한 줄 설명" },
+  { key: "sec2_2_imageUrl", label: "섹션2-2 원형 이미지", type: "url", placeholder: "https://..." },
+  { key: "sec2_2_title", label: "섹션2-2 제목", type: "text", placeholder: "예: Soothes" },
+  { key: "sec2_2_text", label: "섹션2-2 설명", type: "textarea", placeholder: "한 줄 설명" },
+  { key: "sec2_3_imageUrl", label: "섹션2-3 원형 이미지", type: "url", placeholder: "https://..." },
+  { key: "sec2_3_title", label: "섹션2-3 제목", type: "text", placeholder: "예: Balances" },
+  { key: "sec2_3_text", label: "섹션2-3 설명", type: "textarea", placeholder: "한 줄 설명" },
+  { key: "sec3_title", label: "섹션3 제목", type: "text", placeholder: "예: Clinical Results After 4 Weeks" },
+  { key: "sec3_bullets", label: "섹션3 불릿 (한 줄에 하나)", type: "textarea", placeholder: "항목1\n항목2\n항목3" },
+  { key: "sec3_footnote", label: "섹션3 각주", type: "text", placeholder: "출처·면책 문구" },
+  { key: "sec3_imageUrl", label: "섹션3 이미지 (오른쪽)", type: "url", placeholder: "https://..." },
+  { key: "sec4_imageUrl", label: "섹션4 이미지 (왼쪽)", type: "url", placeholder: "https://..." },
+  { key: "sec4_heading", label: "섹션4 제목", type: "text", placeholder: "예: Key Ingredients" },
+  { key: "sec4_items", label: "섹션4 아코디언 (제목::내용 한 줄씩)", type: "textarea", placeholder: "성분명::설명\n..." },
+  { key: "sec4_linkText", label: "섹션4 링크 글자", type: "text", placeholder: "예: Full Ingredient List" },
+  { key: "sec4_linkUrl", label: "섹션4 링크 URL", type: "url", placeholder: "https://..." },
+  { key: "sec5_qa", label: "섹션5 Q&A (질문::답변 한 줄씩)", type: "textarea", placeholder: "질문::답변\n..." },
 ];
 
 function escapeHtml(s: string): string {
@@ -128,6 +156,18 @@ export function sec5QaToHtml(text: string): string {
       return `<div class="pd-qa-item"><div class="pd-qa-q">${escapeHtml(q)}</div><div class="pd-qa-a">${escapeHtml(a).replace(/\n/g, "<br>")}</div></div>`;
     })
     .join("\n");
+}
+
+/** 한 줄당 하나 → <ul><li> HTML (템플릿 E 섹션3용) */
+export function bulletsToHtml(text: string): string {
+  if (!text || !text.trim()) return "";
+  const items = text
+    .trim()
+    .split(/\r?\n/)
+    .filter((l) => l.trim())
+    .map((l) => `<li>${escapeHtml(l.trim())}</li>`)
+    .join("");
+  return `<ul class="pd-bullet-list">${items}</ul>`;
 }
 
 /** 공통 5섹션 HTML (플레이스홀더 포함) */
@@ -631,6 +671,51 @@ function getSectionsHtmlD(): string {
 </section>`;
 }
 
+/** 템플릿 E: 참고 이미지 4섹션 (텍스트+이미지 / 3원형 / 불릿+이미지 / 이미지+아코디언) + Q&A */
+function getSectionsHtmlE(): string {
+  return `
+<section class="pd-sec pd-e-sec1" data-reveal>
+  <div class="pd-e-sec1-inner">
+    <div class="pd-e-sec1-texts">
+      <div class="pd-e-block"><h3 class="pd-e-heading">{{sec1_heading1}}</h3><div class="pd-e-body">{{sec1_text1}}</div></div>
+      <div class="pd-e-block"><h3 class="pd-e-heading">{{sec1_heading2}}</h3><div class="pd-e-body">{{sec1_text2}}</div></div>
+    </div>
+    <div class="pd-e-sec1-img"><img src="{{sec1_imageUrl}}" alt="" onerror="this.style.display='none'"/></div>
+  </div>
+</section>
+<section class="pd-sec pd-e-sec2" data-reveal>
+  <div class="pd-e-sec2-grid">
+    <div class="pd-e-circle-card"><div class="pd-e-circle-img"><img src="{{sec2_1_imageUrl}}" alt="" onerror="this.style.display='none'"/></div><h4 class="pd-e-circle-title">{{sec2_1_title}}</h4><p class="pd-e-circle-text">{{sec2_1_text}}</p></div>
+    <div class="pd-e-circle-card"><div class="pd-e-circle-img"><img src="{{sec2_2_imageUrl}}" alt="" onerror="this.style.display='none'"/></div><h4 class="pd-e-circle-title">{{sec2_2_title}}</h4><p class="pd-e-circle-text">{{sec2_2_text}}</p></div>
+    <div class="pd-e-circle-card"><div class="pd-e-circle-img"><img src="{{sec2_3_imageUrl}}" alt="" onerror="this.style.display='none'"/></div><h4 class="pd-e-circle-title">{{sec2_3_title}}</h4><p class="pd-e-circle-text">{{sec2_3_text}}</p></div>
+  </div>
+</section>
+<section class="pd-sec pd-e-sec3" data-reveal>
+  <div class="pd-e-sec3-inner">
+    <div class="pd-e-sec3-left">
+      <h3 class="pd-e-sec3-title">{{sec3_title}}</h3>
+      {{sec3_bullets}}
+      <p class="pd-e-footnote">{{sec3_footnote}}</p>
+    </div>
+    <div class="pd-e-sec3-img"><img src="{{sec3_imageUrl}}" alt="" onerror="this.style.display='none'"/></div>
+  </div>
+</section>
+<section class="pd-sec pd-e-sec4" data-reveal>
+  <div class="pd-e-sec4-inner">
+    <div class="pd-e-sec4-img"><img src="{{sec4_imageUrl}}" alt="" onerror="this.style.display='none'"/></div>
+    <div class="pd-e-sec4-right">
+      <h3 class="pd-e-sec4-heading">{{sec4_heading}}</h3>
+      <div class="pd-accordion">{{sec4_items}}</div>
+      <a href="{{sec4_linkUrl}}" class="pd-e-link" target="_blank" rel="noopener">{{sec4_linkText}}</a>
+    </div>
+  </div>
+</section>
+<section class="pd-sec pd-e-sec5" data-reveal>
+  <h3 class="pd-e-sec5-title">자주 묻는 질문</h3>
+  <div class="pd-qa-list">{{sec5_qa}}</div>
+</section>`;
+}
+
 /** 테마 D: 이쁘게 꾸민 – 그라데이션·로즈 악센트·둥근 카드 */
 function getThemeStylesD(): string {
   return `
@@ -828,6 +913,121 @@ function getThemeStylesD(): string {
 `;
 }
 
+/** 테마 E: 참고 이미지 스타일 – 2열, 원형 카드, 불릿, 아코디언 */
+function getThemeStylesE(): string {
+  return `
+.pd-detail-wrap { width: 100%; max-width: 1230px; margin: 0 auto; }
+.pd-detail.pd-theme-e {
+  font-family: 'Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+  width: 100%; margin: 0; padding: 0 20px 48px;
+  color: #374151; background: #fcfaf9; line-height: 1.65;
+}
+.pd-detail.pd-theme-e .pd-sec { padding: 48px 0; }
+.pd-detail.pd-theme-e .pd-e-sec1-inner {
+  display: flex; align-items: center; gap: 48px; flex-wrap: wrap;
+}
+.pd-detail.pd-theme-e .pd-e-sec1-texts { flex: 1 1 360px; }
+.pd-detail.pd-theme-e .pd-e-block { margin-bottom: 28px; }
+.pd-detail.pd-theme-e .pd-e-block:last-child { margin-bottom: 0; }
+.pd-detail.pd-theme-e .pd-e-heading {
+  font-size: 1.25rem; font-weight: 700; color: #111; margin: 0 0 10px;
+}
+.pd-detail.pd-theme-e .pd-e-body {
+  font-size: 0.9375rem; color: #4b5563; white-space: pre-wrap; line-height: 1.7;
+}
+.pd-detail.pd-theme-e .pd-e-sec1-img {
+  flex: 1 1 360px; border-radius: 12px; overflow: hidden;
+}
+.pd-detail.pd-theme-e .pd-e-sec1-img img {
+  width: 100%; max-width: 100%; height: auto; max-height: 480px;
+  object-fit: contain; object-position: center; display: block; background: #f5f5f4;
+}
+.pd-detail.pd-theme-e .pd-e-sec2-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px;
+  max-width: 900px; margin: 0 auto;
+}
+@media (max-width: 768px) {
+  .pd-detail.pd-theme-e .pd-e-sec2-grid { grid-template-columns: 1fr; }
+}
+.pd-detail.pd-theme-e .pd-e-circle-card { text-align: center; }
+.pd-detail.pd-theme-e .pd-e-circle-img {
+  width: 180px; height: 180px; margin: 0 auto 16px; border-radius: 50%;
+  overflow: hidden; background: #f5f5f4;
+}
+.pd-detail.pd-theme-e .pd-e-circle-img img {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+}
+.pd-detail.pd-theme-e .pd-e-circle-title {
+  font-size: 1rem; font-weight: 700; color: #111; margin: 0 0 8px;
+}
+.pd-detail.pd-theme-e .pd-e-circle-text {
+  font-size: 0.875rem; color: #6b7280; line-height: 1.5; margin: 0;
+}
+.pd-detail.pd-theme-e .pd-e-sec3-inner {
+  display: flex; align-items: center; gap: 40px; flex-wrap: wrap;
+}
+.pd-detail.pd-theme-e .pd-e-sec3-left { flex: 1 1 380px; }
+.pd-detail.pd-theme-e .pd-e-sec3-title {
+  font-size: 1.25rem; font-weight: 700; color: #111; margin: 0 0 16px;
+}
+.pd-detail.pd-theme-e .pd-bullet-list {
+  margin: 0 0 12px; padding-left: 1.25rem; color: #374151; font-size: 0.9375rem; line-height: 1.7;
+}
+.pd-detail.pd-theme-e .pd-e-footnote {
+  font-size: 0.8125rem; color: #6b7280; margin: 12px 0 0; line-height: 1.5;
+}
+.pd-detail.pd-theme-e .pd-e-sec3-img {
+  flex: 1 1 340px; border-radius: 12px; overflow: hidden;
+}
+.pd-detail.pd-theme-e .pd-e-sec3-img img {
+  width: 100%; max-width: 100%; height: auto; max-height: 400px;
+  object-fit: contain; object-position: center; display: block; background: #fafafa;
+}
+.pd-detail.pd-theme-e .pd-e-sec4-inner {
+  display: flex; align-items: center; gap: 40px; flex-wrap: wrap;
+}
+.pd-detail.pd-theme-e .pd-e-sec4-img {
+  flex: 1 1 400px; border-radius: 12px; overflow: hidden;
+}
+.pd-detail.pd-theme-e .pd-e-sec4-img img {
+  width: 100%; max-width: 100%; height: auto; max-height: 480px;
+  object-fit: contain; object-position: center; display: block; background: #fafafa;
+}
+.pd-detail.pd-theme-e .pd-e-sec4-right { flex: 1 1 340px; }
+.pd-detail.pd-theme-e .pd-e-sec4-heading {
+  font-size: 1.125rem; font-weight: 600; color: #111; margin: 0 0 16px;
+}
+.pd-detail.pd-theme-e .pd-accordion-item {
+  border-bottom: 1px solid #e5e7eb; margin-bottom: 0;
+}
+.pd-detail.pd-theme-e .pd-accordion-head {
+  width: 100%; padding: 14px 0; text-align: left; font-size: 0.9375rem; font-weight: 600;
+  color: #111; background: transparent; border: none; cursor: pointer;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.pd-detail.pd-theme-e .pd-accordion-head::after { content: '▼'; font-size: 0.6rem; color: #9ca3af; }
+.pd-detail.pd-theme-e .pd-accordion-item[data-open] .pd-accordion-head::after { content: '▲'; }
+.pd-detail.pd-theme-e .pd-accordion-body { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
+.pd-detail.pd-theme-e .pd-accordion-body-inner {
+  padding: 0 0 14px; font-size: 0.9375rem; color: #4b5563; line-height: 1.6; border-top: none;
+}
+.pd-detail.pd-theme-e .pd-e-link {
+  display: inline-block; margin-top: 12px; font-size: 0.875rem; color: #059669; text-decoration: underline;
+}
+.pd-detail.pd-theme-e .pd-e-sec5-title {
+  font-size: 1.125rem; font-weight: 600; color: #111; margin: 0 0 16px;
+}
+.pd-detail.pd-theme-e .pd-qa-item { padding: 16px 0; border-bottom: 1px solid #e5e7eb; }
+.pd-detail.pd-theme-e .pd-qa-item:last-child { border-bottom: none; }
+.pd-detail.pd-theme-e .pd-qa-q { font-weight: 600; color: #111; margin-bottom: 6px; font-size: 0.9375rem; }
+.pd-detail.pd-theme-e .pd-qa-a { font-size: 0.9375rem; color: #4b5563; line-height: 1.6; }
+.pd-detail.pd-theme-e .pd-sec[data-visible] { opacity: 1; transform: translateY(0); }
+.pd-detail.pd-theme-e .pd-sec {
+  opacity: 0; transform: translateY(16px); transition: opacity 0.5s ease, transform 0.5s ease;
+}
+`;
+}
+
 function getThemeStyles(theme: ThemeId): string {
   switch (theme) {
     case "A":
@@ -838,6 +1038,8 @@ function getThemeStyles(theme: ThemeId): string {
       return getThemeStylesC();
     case "D":
       return getThemeStylesD();
+    case "E":
+      return getThemeStylesE();
   }
 }
 
@@ -880,7 +1082,9 @@ function buildFullHtml(theme: ThemeId): string {
         ? "pd-theme-b"
         : theme === "C"
           ? "pd-theme-c"
-          : "pd-theme-d";
+          : theme === "D"
+            ? "pd-theme-d"
+            : "pd-theme-e";
   const sectionsHtml =
     theme === "B"
       ? getSectionsHtmlB()
@@ -888,7 +1092,9 @@ function buildFullHtml(theme: ThemeId): string {
         ? getSectionsHtmlC()
         : theme === "D"
           ? getSectionsHtmlD()
-          : getSectionsHtml();
+          : theme === "E"
+            ? getSectionsHtmlE()
+            : getSectionsHtml();
   return `<style>${getThemeStyles(theme)}</style><div class="pd-detail-wrap"><div class="pd-detail ${themeClass}">${sectionsHtml}</div></div><script>${getScript()}</script>`;
 }
 
@@ -935,6 +1141,17 @@ function getTemplateD(): DescriptionTemplate {
   };
 }
 
+function getTemplateE(): DescriptionTemplate {
+  return {
+    id: "E",
+    name: "템플릿 E – 뷰티 4섹션",
+    description:
+      "2열(텍스트+이미지), 3개 원형 카드, 불릿+이미지, 이미지+아코디언, Q&A. max-width 1230px.",
+    fields: [...FIELDS_E],
+    html: buildFullHtml("E"),
+  };
+}
+
 /** 스펙 텍스트 → 테이블 행 (기존 호환용, 현재 템플릿에서는 미사용) */
 export function specsTextToTableRows(specsText: string): string {
   if (!specsText || !specsText.trim()) return "";
@@ -968,11 +1185,17 @@ export function fillTemplate(
   const sec4Embed =
     values.sec4_videoUrl != null ? getVideoEmbedHtml(values.sec4_videoUrl) : "";
   const sec5 = values.sec5_qa != null ? sec5QaToHtml(values.sec5_qa) : "";
+  const sec3Bullets =
+    values.sec3_bullets != null ? bulletsToHtml(values.sec3_bullets) : "";
+  const sec4Items =
+    values.sec4_items != null ? sec3ItemsToAccordion(values.sec4_items) : "";
 
   const replacements: Array<{ place: string; value: string }> = [
     { place: "{{sec3_items}}", value: sec3 },
     { place: "{{sec4_videoEmbed}}", value: sec4Embed },
     { place: "{{sec5_qa}}", value: sec5 },
+    { place: "{{sec3_bullets}}", value: sec3Bullets },
+    { place: "{{sec4_items}}", value: sec4Items },
   ];
 
   for (const { place, value } of replacements) {
@@ -989,7 +1212,16 @@ export function fillTemplate(
       );
       continue;
     }
-    if (["sec3_items", "sec4_videoUrl", "sec5_qa"].includes(key)) continue;
+    if (
+      [
+        "sec3_items",
+        "sec4_videoUrl",
+        "sec5_qa",
+        "sec3_bullets",
+        "sec4_items",
+      ].includes(key)
+    )
+      continue;
     out = out.split(place).join(escapeHtml(value));
   }
 
@@ -1002,18 +1234,19 @@ const TEMPLATES: DescriptionTemplate[] = [
   getTemplateB(),
   getTemplateC(),
   getTemplateD(),
+  getTemplateE(),
 ];
 
 export const descriptionTemplates = TEMPLATES;
 
 export function getDescriptionTemplateById(
-  id: "A" | "B" | "C" | "D",
+  id: "A" | "B" | "C" | "D" | "E",
 ): DescriptionTemplate | undefined {
   return TEMPLATES.find((t) => t.id === id);
 }
 
 export type ParsedDescription = {
-  templateId: "A" | "B" | "C" | "D" | null;
+  templateId: "A" | "B" | "C" | "D" | "E" | null;
   values: Record<string, string>;
 };
 
@@ -1026,14 +1259,15 @@ export function parseDescriptionToValues(html: string): ParsedDescription {
     return { templateId: null, values: {} };
 
   const trimmed = html.trim();
-  let templateId: "A" | "B" | "C" | "D" | null = null;
+  let templateId: "A" | "B" | "C" | "D" | "E" | null = null;
 
-  const markerMatch = trimmed.match(/<!--\s*kment-tpl:(A|B|C|D)\s*-->/);
-  if (markerMatch) templateId = markerMatch[1] as "A" | "B" | "C" | "D";
+  const markerMatch = trimmed.match(/<!--\s*kment-tpl:(A|B|C|D|E)\s*-->/);
+  if (markerMatch) templateId = markerMatch[1] as "A" | "B" | "C" | "D" | "E";
   else if (trimmed.includes("pd-theme-a")) templateId = "A";
   else if (trimmed.includes("pd-theme-b")) templateId = "B";
   else if (trimmed.includes("pd-theme-c")) templateId = "C";
   else if (trimmed.includes("pd-theme-d")) templateId = "D";
+  else if (trimmed.includes("pd-theme-e")) templateId = "E";
 
   const values: Record<string, string> = {};
   if (!templateId) return { templateId: null, values: {} };
@@ -1042,6 +1276,81 @@ export function parseDescriptionToValues(html: string): ParsedDescription {
 
   try {
     const doc = new DOMParser().parseFromString(html, "text/html");
+
+    if (templateId === "E") {
+      const sec1 = doc.querySelector(".pd-e-sec1");
+      if (sec1) {
+        const h1 = sec1.querySelectorAll(".pd-e-heading");
+        const b1 = sec1.querySelectorAll(".pd-e-body");
+        values.sec1_heading1 = (h1[0]?.textContent ?? "").trim();
+        values.sec1_text1 = (b1[0]?.textContent ?? "").trim();
+        values.sec1_heading2 = (h1[1]?.textContent ?? "").trim();
+        values.sec1_text2 = (b1[1]?.textContent ?? "").trim();
+        const img = sec1.querySelector(".pd-e-sec1-img img");
+        values.sec1_imageUrl = (img?.getAttribute("src") ?? "").trim();
+      }
+      const sec2Grid = doc.querySelector(".pd-e-sec2-grid");
+      if (sec2Grid) {
+        const cards = sec2Grid.querySelectorAll(".pd-e-circle-card");
+        [0, 1, 2].forEach((i) => {
+          const card = cards[i];
+          if (card) {
+            const img = card.querySelector(".pd-e-circle-img img");
+            const title = card.querySelector(".pd-e-circle-title");
+            const text = card.querySelector(".pd-e-circle-text");
+            values[`sec2_${i + 1}_imageUrl`] = (img?.getAttribute("src") ?? "").trim();
+            values[`sec2_${i + 1}_title`] = (title?.textContent ?? "").trim();
+            values[`sec2_${i + 1}_text`] = (text?.textContent ?? "").trim();
+          }
+        });
+      }
+      const sec3 = doc.querySelector(".pd-e-sec3");
+      if (sec3) {
+        const titleEl = sec3.querySelector(".pd-e-sec3-title");
+        values.sec3_title = (titleEl?.textContent ?? "").trim();
+        const bullets = sec3.querySelectorAll(".pd-bullet-list li");
+        values.sec3_bullets = Array.from(bullets)
+          .map((li) => (li.textContent ?? "").trim())
+          .filter(Boolean)
+          .join("\n");
+        const footnote = sec3.querySelector(".pd-e-footnote");
+        values.sec3_footnote = (footnote?.textContent ?? "").trim();
+        const img = sec3.querySelector(".pd-e-sec3-img img");
+        values.sec3_imageUrl = (img?.getAttribute("src") ?? "").trim();
+      }
+      const sec4 = doc.querySelector(".pd-e-sec4");
+      if (sec4) {
+        const img = sec4.querySelector(".pd-e-sec4-img img");
+        values.sec4_imageUrl = (img?.getAttribute("src") ?? "").trim();
+        const heading = sec4.querySelector(".pd-e-sec4-heading");
+        values.sec4_heading = (heading?.textContent ?? "").trim();
+        const accordionItems = sec4.querySelectorAll(".pd-accordion-item");
+        const lines: string[] = [];
+        accordionItems.forEach((item) => {
+          const head = item.querySelector(".pd-accordion-head");
+          const bodyInner = item.querySelector(".pd-accordion-body-inner");
+          const title = (head?.textContent ?? "").trim();
+          const body = (bodyInner?.textContent ?? "").trim().replace(/\r?\n/g, "\n");
+          lines.push(`${title}::${body}`);
+        });
+        values.sec4_items = lines.join("\n");
+        const link = sec4.querySelector(".pd-e-link");
+        values.sec4_linkText = (link?.textContent ?? "").trim();
+        values.sec4_linkUrl = (link?.getAttribute("href") ?? "").trim();
+      }
+      const sec5 = doc.querySelector(".pd-e-sec5");
+      if (sec5) {
+        const qaItems = sec5.querySelectorAll(".pd-qa-item");
+        const qaLines: string[] = [];
+        qaItems.forEach((item) => {
+          const q = item.querySelector(".pd-qa-q");
+          const a = item.querySelector(".pd-qa-a");
+          qaLines.push(`${(q?.textContent ?? "").trim()}::${(a?.textContent ?? "").trim()}`);
+        });
+        values.sec5_qa = qaLines.join("\n");
+      }
+      return { templateId, values };
+    }
 
     const sec1Img = doc.querySelector(".pd-sec1-img img");
     const sec1Text = doc.querySelector(".pd-sec1-text");
